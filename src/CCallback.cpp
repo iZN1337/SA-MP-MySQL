@@ -11,6 +11,7 @@
 #include "misc.h"
 #include <cstdio>
 
+
 boost::lockfree::queue<
 		CMySQLQuery*, 
 		boost::lockfree::fixed_sized<true>,
@@ -29,8 +30,6 @@ void CCallback::ProcessCallbacks()
 		 
 		if(Callback != NULL && (Callback->Name.length() > 0 || Query->OrmObject != NULL) ) 
 		{
-			bool PassByReference = Query->Callback->IsInline;
-
 			if(Query->OrmObject != NULL) //orm, update the variables with the given result
 			{
 				switch(Query->OrmQueryType) 
@@ -48,63 +47,31 @@ void CCallback::ProcessCallbacks()
 			for (list<AMX *>::iterator a = m_AmxList.begin(), end = m_AmxList.end(); a != end; ++a) 
 			{
 				AMX *amx = (*a);
-				cell amx_Ret;
-				int amx_Index;
-				cell amx_MemoryAddress = -1;
+				cell amx_ret;
+				int amx_index;
+				cell amx_mem_addr = -1;
 
-				if (amx_FindPublic(amx, Callback->Name.c_str(), &amx_Index) == AMX_ERR_NONE) 
+				if (amx_FindPublic(amx, Callback->Name.c_str(), &amx_index) == AMX_ERR_NONE) 
 				{
 					CLog::Get()->StartCallback(Callback->Name.c_str());
 
-					int StringIndex = Callback->ParamFormat.length()-1; 
-					while(!Callback->Parameters.empty() && StringIndex >= 0) 
+					while(!Callback->Parameters.empty())
 					{
-						switch(Callback->ParamFormat.at(StringIndex)) 
+						cell tmpAddress = -1;
+						boost::variant<cell, string> &param_value = Callback->Parameters.top();
+						if(param_value.type() == typeid(cell))
 						{
-							case 'i':
-							case 'd': 
-							{
-								int val = 0;
-								ConvertStrToInt(Callback->Parameters.top().c_str(), val);
-
-								if(PassByReference == false)
-									amx_Push(amx, (cell)val);
-								else 
-								{
-									cell tmpAddress;
-									amx_PushArray(amx, &tmpAddress, NULL, (cell*)&val, 1);
-									if(amx_MemoryAddress < NULL)
-										amx_MemoryAddress = tmpAddress;
-								}
-							} 
-							break;
-							case 'f': 
-							{
-								float float_val = 0.0f;
-								ConvertStrToFloat(Callback->Parameters.top().c_str(), float_val);
-								cell FParam = amx_ftoc(float_val);
-								
-								if(PassByReference == false)
-									amx_Push(amx, FParam);
-								else 
-								{
-									cell tmpAddress;
-									amx_PushArray(amx, &tmpAddress, NULL, (cell*)&FParam, 1);
-									if(amx_MemoryAddress < NULL)
-										amx_MemoryAddress = tmpAddress;
-								}
-							} 
-							break;
-							default: 
-							{
-								cell tmpAddress;
-								amx_PushString(amx, &tmpAddress, NULL, Callback->Parameters.top().c_str(), 0, 0);
-								if(amx_MemoryAddress < NULL)
-									amx_MemoryAddress = tmpAddress;
-							}
+							if(Query->Callback->IsInline == false)
+								amx_Push(amx, boost::get<cell>(param_value));
+							else
+								amx_PushArray(amx, &tmpAddress, NULL, static_cast<cell*>(&boost::get<cell>(param_value)), 1);
 						}
+						else
+							amx_PushString(amx, &tmpAddress, NULL, boost::get<string>(param_value).c_str(), 0, 0);
+						
+						if(tmpAddress != -1 && amx_mem_addr < NULL)
+							amx_mem_addr = tmpAddress;
 
-						StringIndex--;
 						Callback->Parameters.pop();
 					}
 
@@ -113,9 +80,9 @@ void CCallback::ProcessCallbacks()
 					Query->Result = NULL;
 					CMySQLHandle::ActiveHandle = Query->ConnHandle;
 
-					amx_Exec(amx, &amx_Ret, amx_Index);
-					if (amx_MemoryAddress >= NULL)
-						amx_Release(amx, amx_MemoryAddress);
+					amx_Exec(amx, &amx_ret, amx_index);
+					if (amx_mem_addr >= NULL)
+						amx_Release(amx, amx_mem_addr);
 
 					CMySQLHandle::ActiveHandle = NULL;
 
@@ -159,36 +126,36 @@ void CCallback::ClearAll() {
 		tmpQuery->Destroy();
 }
 
-void CCallback::FillCallbackParams(AMX* amx, cell* params, const int ConstParamCount) 
+void CCallback::FillCallbackParams(AMX* amx, cell* params, const char *param_format, const int ConstParamCount) 
 {
-	unsigned int ParamIdx = 1;
-	cell *AddressPtr;
+	if(param_format == NULL)
+		return ;
 
-	for(string::iterator c = ParamFormat.begin(), end = ParamFormat.end(); c != end; ++c) 
+	unsigned int param_idx = 1;
+
+	do
 	{
-		if ( (*c) == 'd' || (*c) == 'i') 
-		{
-			amx_GetAddr(amx, params[ConstParamCount + ParamIdx], &AddressPtr);
-			char IntBuf[12]; //12 -> strlen of (-2^31) + '\0'
-			ConvertIntToStr<10>((*AddressPtr), IntBuf);
-			Parameters.push(IntBuf);
-		} 
-		else if ( (*c) == 's' || (*c) == 'z') 
-		{
-			char *StrBuf = NULL;
-			amx_StrParam(amx, params[ConstParamCount + ParamIdx], StrBuf);
-			Parameters.push(StrBuf == NULL ? string() : StrBuf);
-		} 
-		else if ( (*c) == 'f') 
-		{
-			amx_GetAddr(amx, params[ConstParamCount + ParamIdx], &AddressPtr);
-			char FloatBuf[84]; //84 -> strlen of (2^(2^7)) + '\0'
-			ConvertFloatToStr(amx_ctof(*AddressPtr), FloatBuf);
-			Parameters.push(FloatBuf);
-		} 
-		else 
-			Parameters.push("NULL");
+		cell *AddressPtr = NULL;
+		char *StrBuf = NULL;
 
-		ParamIdx++;
-	}
+		switch(*param_format)
+		{
+			case 'i':
+			case 'd':
+			case 'f':
+				amx_GetAddr(amx, params[ConstParamCount + param_idx++], &AddressPtr);
+				Parameters.push(*AddressPtr);
+				break;
+
+			case 'z':
+			case 's':
+				amx_StrParam(amx, params[ConstParamCount + param_idx++], StrBuf);
+				Parameters.push(StrBuf != NULL ? StrBuf : string());
+				break;
+
+			default:
+				Parameters.push("NULL");
+		} 
+
+	} while(*(++param_format));
 }

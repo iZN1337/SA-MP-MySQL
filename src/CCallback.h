@@ -7,6 +7,7 @@
 #include <stack>
 #include <string>
 #include <boost/lockfree/queue.hpp>
+#include <boost/variant.hpp>
 
 using std::list;
 using std::stack;
@@ -22,7 +23,7 @@ class CCallback
 {
 public:
 
-	void FillCallbackParams(AMX* amx, cell* params, const int ConstParamCount);
+	void FillCallbackParams(AMX* amx, cell* params, const char *param_format, const int ConstParamCount);
 
 	CCallback() :
 		IsInline(false)
@@ -30,7 +31,7 @@ public:
 	~CCallback() {}
 
 
-	stack<string> Parameters;
+	stack<boost::variant<cell, string> > Parameters;
 	string Name;
 	string ParamFormat;
 	bool IsInline;
