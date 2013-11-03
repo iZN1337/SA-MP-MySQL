@@ -33,7 +33,6 @@ public:
 
 	stack<boost::variant<cell, string> > Parameters;
 	string Name;
-	string ParamFormat;
 	bool IsInline;
 
 	

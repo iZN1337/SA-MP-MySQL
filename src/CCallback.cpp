@@ -112,7 +112,7 @@ void CCallback::EraseAmx( AMX *amx )
 {
 	for (list<AMX *>::iterator a = m_AmxList.begin(); a != m_AmxList.end(); ++a) 
 	{
-		if (( *a) == amx) 
+		if ( (*a) == amx) 
 		{
 			m_AmxList.erase(a);
 			break;
@@ -121,9 +121,9 @@ void CCallback::EraseAmx( AMX *amx )
 }
 
 void CCallback::ClearAll() {
-	CMySQLQuery *tmpQuery = NULL;
-	while(m_CallbackQueue.pop(tmpQuery))
-		tmpQuery->Destroy();
+	CMySQLQuery *query = NULL;
+	while(m_CallbackQueue.pop(query))
+		query->Destroy();
 }
 
 void CCallback::FillCallbackParams(AMX* amx, cell* params, const char *param_format, const int ConstParamCount) 

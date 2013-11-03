@@ -53,28 +53,28 @@ CMySQLHandle *CMySQLHandle::Create(string host, string user, string pass, string
 {
 	CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::Create", "creating new connection..");
 
-	int ID = 1;
+	int id = 1;
 	if(SQLHandle.size() > 0) 
 	{
 		unordered_map<int, CMySQLHandle*>::iterator itHandle = SQLHandle.begin();
 		do 
 		{
-			ID = itHandle->first+1;
+			id = itHandle->first+1;
 			++itHandle;
-		} while(SQLHandle.find(ID) != SQLHandle.end());
+		} while(SQLHandle.find(id) != SQLHandle.end());
 	}
 
 
-	CMySQLHandle *Handle = new CMySQLHandle(ID);
+	CMySQLHandle *handle = new CMySQLHandle(id);
 
 	//init connections
-	Handle->m_MainConnection = CMySQLConnection::Create(host, user, pass, db, port, reconnect);
-	Handle->m_QueryConnection = CMySQLConnection::Create(host, user, pass, db, port, reconnect);
+	handle->m_MainConnection = CMySQLConnection::Create(host, user, pass, db, port, reconnect);
+	handle->m_QueryConnection = CMySQLConnection::Create(host, user, pass, db, port, reconnect);
 
-	SQLHandle.insert( unordered_map<int, CMySQLHandle*>::value_type(ID, Handle) );
-	CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::Create", "connection created with ID = %d", ID);
+	SQLHandle.insert( unordered_map<int, CMySQLHandle*>::value_type(id, handle) );
+	CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::Create", "connection created with ID = %d", id);
 		
-	return Handle;
+	return handle;
 }
 
 void CMySQLHandle::Destroy() 
@@ -112,22 +112,22 @@ int CMySQLHandle::SaveActiveResult()
 		}
 		else 
 		{
-			int ID = 1;
+			int id = 1;
 			if(!m_SavedResults.empty()) 
 			{
 				unordered_map<int, CMySQLResult*>::iterator itHandle = m_SavedResults.begin();
 				do 
 				{
-					ID = itHandle->first+1;
+					id = itHandle->first+1;
 					++itHandle;
-				} while(m_SavedResults.find(ID) != m_SavedResults.end());
+				} while(m_SavedResults.find(id) != m_SavedResults.end());
 			}
 
-			m_ActiveResultID = ID;
-			m_SavedResults.insert( std::map<int, CMySQLResult*>::value_type(ID, m_ActiveResult) );
+			m_ActiveResultID = id;
+			m_SavedResults.insert( std::map<int, CMySQLResult*>::value_type(id, m_ActiveResult) );
 			
-			CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::SaveActiveResult", "cache saved with ID = %d", ID);
-			return ID; 
+			CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::SaveActiveResult", "cache saved with ID = %d", id);
+			return id; 
 		}
 	}
 	
@@ -145,6 +145,7 @@ bool CMySQLHandle::DeleteSavedResult(int resultid)
 			{
 				m_ActiveResult = NULL;
 				m_ActiveResultID = 0;
+				ActiveHandle = NULL;
 			}
 			ResultHandle->Destroy();
 			m_SavedResults.erase(resultid);
@@ -172,6 +173,7 @@ bool CMySQLHandle::SetActiveResult(int resultid)
 				
 				m_ActiveResult = cResult; //set new active cache
 				m_ActiveResultID = resultid; //new active cache was stored previously
+				ActiveHandle = this;
 				CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::SetActiveResult", "result is now active");
 			}
 		}
@@ -184,6 +186,7 @@ bool CMySQLHandle::SetActiveResult(int resultid)
 			m_ActiveResult->Destroy(); //delete unsaved cache
 		m_ActiveResult = NULL;
 		m_ActiveResultID = 0;
+		ActiveHandle = NULL;
 		CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::SetActiveResult", "invalid result ID specified, setting active result to zero");
 	}
 	return true;
@@ -259,12 +262,12 @@ void CMySQLConnection::EscapeString(const char *src, string &dest)
 {
 	if(src != NULL && m_IsConnected) 
 	{
-		size_t SrcLen = strlen(src);
-		char *tmpEscapedStr = (char *)malloc((SrcLen*2 + 1) * sizeof(char));
+		size_t src_len = strlen(src);
+		char *escaped_str = (char *)malloc((src_len*2 + 1) * sizeof(char));
 
-		size_t EscapedLen = mysql_real_escape_string(m_Connection, tmpEscapedStr, src, SrcLen);
-		dest.assign(tmpEscapedStr);
+		mysql_real_escape_string(m_Connection, escaped_str, src, src_len);
+		dest.assign(escaped_str);
 
-		free(tmpEscapedStr);
+		free(escaped_str);
 	}
 }
