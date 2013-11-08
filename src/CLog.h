@@ -110,9 +110,9 @@ private:
 	thread::id m_MainThreadID;
 
 	boost::lockfree::queue<
-			m_SLogData* //, 
-			//boost::lockfree::fixed_sized<true>,
-			//boost::lockfree::capacity<32678>
+			m_SLogData*, 
+			boost::lockfree::fixed_sized<true>,
+			boost::lockfree::capacity<32678>
 		> m_LogQueue;
 };
 

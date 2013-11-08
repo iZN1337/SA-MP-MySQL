@@ -11,9 +11,6 @@
 
 #include "misc.h"
 
-#include <boost/thread.hpp>
-#include <boost/thread/future.hpp>
-
 
 CMySQLQuery CMySQLQuery::Create(
 	string query, CMySQLConnection *connection,
