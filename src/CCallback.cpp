@@ -100,8 +100,8 @@ void CCallback::ProcessCallbacks()
 			}
 			else
 			{
-				//if(mysql_options.execute-in-order == true)
-					//return ;
+				if (MySQLOptions.ExecuteInOrder == true)
+					return ;
 			}
 			
 		} while (!m_CallbackQueue.empty() && i != m_CallbackQueue.end() && ++i != m_CallbackQueue.end());

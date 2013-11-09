@@ -52,7 +52,8 @@ enum VarDatatype
 
 enum E_MYSQL_OPTION
 {
-	DUPLICATE_CONNECTIONS
+	DUPLICATE_CONNECTIONS,
+	EXECUTE_IN_ORDER
 };
 
 #define mysql_insert_id cache_insert_id

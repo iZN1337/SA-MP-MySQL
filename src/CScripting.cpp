@@ -783,6 +783,8 @@ cell AMX_NATIVE_CALL Native::mysql_option(AMX* amx, cell* params)
 		case DUPLICATE_CONNECTIONS:
 			MySQLOptions.DuplicateConnections = !!option_value;
 			break;
+		case EXECUTE_IN_ORDER:
+			MySQLOptions.ExecuteInOrder = !!option_value;
 		default:
 			return CLog::Get()->LogFunction(LOG_ERROR, "mysql_option", "invalid option");
 	}

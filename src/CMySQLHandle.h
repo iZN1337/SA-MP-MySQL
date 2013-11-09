@@ -220,9 +220,11 @@ private:
 struct CMySQLOptions
 {
 	CMySQLOptions() :
-		DuplicateConnections(false)
+		DuplicateConnections(false),
+		ExecuteInOrder(true)
 	{}
 	bool DuplicateConnections;
+	bool ExecuteInOrder;
 };
 extern struct CMySQLOptions MySQLOptions;
 
@@ -236,7 +238,8 @@ enum E_DATATYPE
 
 enum E_MYSQL_OPTION	
 {
-	DUPLICATE_CONNECTIONS
+	DUPLICATE_CONNECTIONS,
+	EXECUTE_IN_ORDER
 };
 
 

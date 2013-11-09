@@ -9,7 +9,7 @@
 namespace Native 
 {
 	//ORM natives
-	cell AMX_NATIVE_CALL orm_create(AMX* amx, cell* params);
+	/*cell AMX_NATIVE_CALL orm_create(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL orm_destroy(AMX* amx, cell* params);
 
 	cell AMX_NATIVE_CALL orm_errno(AMX* amx, cell* params);
@@ -24,7 +24,7 @@ namespace Native
 	cell AMX_NATIVE_CALL orm_apply_cache(AMX* amx, cell* params);
 
 	cell AMX_NATIVE_CALL orm_addvar(AMX* amx, cell* params);
-	cell AMX_NATIVE_CALL orm_setkey(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL orm_setkey(AMX* amx, cell* params);*/
 
 
 	//MySQL natives
