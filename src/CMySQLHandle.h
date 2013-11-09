@@ -55,6 +55,11 @@ public:
 		return m_IsConnected;
 	}
 
+	inline bool operator==(CMySQLConnection &rhs)
+	{
+		return (rhs.m_Host.compare(m_Host) == 0 && rhs.m_User.compare(m_User) == 0 && rhs.m_Database.compare(m_Database) == 0 && rhs.m_Passw.compare(m_Passw) == 0);
+	}
+
 private:
 	CMySQLConnection(string &host, string &user, string &passw, string &db, unsigned int port, bool auto_reconnect)
 		:	m_Host(host),
@@ -190,11 +195,27 @@ private:
 		*m_QueryConnection; //used for threaded queries
 };
 
-enum E_DATATYPES 
+
+struct CMySQLOptions
+{
+	CMySQLOptions() :
+		DuplicateConnections(false)
+	{}
+	bool DuplicateConnections;
+};
+extern struct CMySQLOptions MySQLOptions;
+
+
+enum E_DATATYPE
 {
 	DATATYPE_INT,
 	DATATYPE_FLOAT,
 	DATATYPE_STRING
+};
+
+enum E_MYSQL_OPTION	
+{
+	DUPLICATE_CONNECTIONS
 };
 
 
