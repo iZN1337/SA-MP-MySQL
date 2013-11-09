@@ -9,7 +9,7 @@
 namespace Native 
 {
 	//ORM natives
-	/*cell AMX_NATIVE_CALL orm_create(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL orm_create(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL orm_destroy(AMX* amx, cell* params);
 
 	cell AMX_NATIVE_CALL orm_errno(AMX* amx, cell* params);
@@ -24,7 +24,7 @@ namespace Native
 	cell AMX_NATIVE_CALL orm_apply_cache(AMX* amx, cell* params);
 
 	cell AMX_NATIVE_CALL orm_addvar(AMX* amx, cell* params);
-	cell AMX_NATIVE_CALL orm_setkey(AMX* amx, cell* params);*/
+	cell AMX_NATIVE_CALL orm_setkey(AMX* amx, cell* params);
 
 
 	//MySQL natives
@@ -32,11 +32,11 @@ namespace Native
 	cell AMX_NATIVE_CALL mysql_connect(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL mysql_close(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL mysql_reconnect(AMX* amx, cell* params);
-	//TODO: add mysql_option for 1. duplicate connections and 2. query-in-order execution
 
-	cell AMX_NATIVE_CALL mysql_current_handle(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL mysql_unprocessed_queries(AMX* amx, cell* params);
-	
+	cell AMX_NATIVE_CALL mysql_current_handle(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL mysql_option(AMX* amx, cell* params);
+
 	cell AMX_NATIVE_CALL mysql_errno(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL mysql_escape_string(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL mysql_format(AMX* amx, cell* params);
