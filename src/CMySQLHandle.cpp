@@ -52,11 +52,16 @@ void CMySQLHandle::WaitForQueryExec()
 
 CMySQLHandle *CMySQLHandle::Create(string host, string user, string pass, string db, size_t port, size_t pool_size, bool reconnect) 
 {
+	CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::Create", "creating new connection..");
+
 	CMySQLHandle *handle = NULL;
 	CMySQLConnection *main_connection = CMySQLConnection::Create(host, user, pass, db, port, reconnect);
-	if (MySQLOptions.DuplicateConnections == false && SQLHandle.size() > 0) {
+
+	if (MySQLOptions.DuplicateConnections == false && SQLHandle.size() > 0) 
+	{
 		//code used for checking duplicate connections
-		for(unordered_map<int, CMySQLHandle*>::iterator i = SQLHandle.begin(), end = SQLHandle.end(); i != end; ++i) {
+		for(unordered_map<int, CMySQLHandle*>::iterator i = SQLHandle.begin(), end = SQLHandle.end(); i != end; ++i) 
+		{
 			CMySQLConnection *Connection = i->second->m_MainConnection;
 			if((*Connection) == (*main_connection))
 			{
@@ -66,9 +71,9 @@ CMySQLHandle *CMySQLHandle::Create(string host, string user, string pass, string
 			}
 		}
 	}
-	if(handle == NULL) {
-			CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::Create", "creating new connection..");
 
+	if(handle == NULL) 
+	{
 		int id = 1;
 		if(SQLHandle.size() > 0) 
 		{
@@ -85,9 +90,8 @@ CMySQLHandle *CMySQLHandle::Create(string host, string user, string pass, string
 
 		//init connections
 		handle->m_MainConnection = main_connection;
-
 		for (size_t i = 0; i < pool_size; ++i)
-			handle->m_ConnectionPool.push_front(CMySQLConnection::Create(host, user, pass, db, port, reconnect));
+			handle->m_ConnectionPool.insert(CMySQLConnection::Create(host, user, pass, db, port, reconnect));
 
 		SQLHandle.insert( unordered_map<int, CMySQLHandle*>::value_type(id, handle) );
 
@@ -102,7 +106,7 @@ void CMySQLHandle::Destroy()
 	delete this;
 }
 
-void CMySQLHandle::ExecuteOnConnectionPool(void(CMySQLConnection::*func)())
+void CMySQLHandle::ExecuteOnConnectionPool(void (CMySQLConnection::*func)())
 {
 	for(unordered_set<CMySQLConnection*>::iterator c = m_ConnectionPool.begin(), end = m_ConnectionPool.end(); c != end; ++c)
 		((*c)->*func)();

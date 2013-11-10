@@ -137,7 +137,7 @@ public:
 
 	void ExecuteOnConnectionPool(void (CMySQLConnection::*func)());
 
-	inline void QueueQuery(function<CMySQLQuery(CMySQLConnection*)> &&func)
+	inline void QueueQuery(function< CMySQLQuery (CMySQLConnection*) > &&func)
 	{
 		m_QueryQueue.push(boost::move(func));
 	}

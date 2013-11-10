@@ -83,8 +83,8 @@ CMySQLQuery CMySQLQuery::Create(
 
 					for (size_t r = 0; r != num_rows; ++r)
 					{
-						vector<string> Row;
-						Row.reserve(QueryObj.Result->m_Fields + 1);
+						vector<string> row;
+						row.reserve(QueryObj.Result->m_Fields + 1);
 						for (unsigned int a = 0; a != QueryObj.Result->m_Fields; ++a)
 							row.push_back(mysql_row[a] == NULL ? "NULL" : mysql_row[a]);
 
@@ -101,10 +101,7 @@ CMySQLQuery CMySQLQuery::Create(
 				}
 				else //error
 				{
-					int ErrorID = mysql_errno(mysql_connection);
-					string ErrorString(mysql_error(mysql_connection));
-
-					CLog::Get()->LogFunction(LOG_ERROR, log_funcname, "an error occured while storing the result: (error #%d) \"%s\"", ErrorID, ErrorString.c_str());
+					CLog::Get()->LogFunction(LOG_ERROR, log_funcname, "an error occured while storing the result: (error #%d) \"%s\"", mysql_errno(mysql_connection), mysql_error(mysql_connection));
 
 					//we clear the callback name and forward it to the callback handler
 					//the callback handler free's all memory but doesn't call the callback because there's no callback name
