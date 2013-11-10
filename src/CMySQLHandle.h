@@ -20,6 +20,7 @@ using std::tuple;
 using std::function;
 using std::queue;
 using std::atomic;
+namespace this_thread = std::this_thread;
 
 
 #ifdef WIN32

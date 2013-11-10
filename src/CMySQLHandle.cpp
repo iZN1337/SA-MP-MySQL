@@ -130,7 +130,7 @@ int CMySQLHandle::SaveActiveResult()
 			}
 
 			m_ActiveResultID = id;
-			m_SavedResults.insert( std::map<int, CMySQLResult*>::value_type(id, m_ActiveResult) );
+			m_SavedResults.insert({ id, m_ActiveResult });
 			
 			CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::SaveActiveResult", "cache saved with id = %d", id);
 			return id; 

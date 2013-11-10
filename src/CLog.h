@@ -4,8 +4,12 @@
 
 
 #include <boost/lockfree/queue.hpp>
-#include <boost/atomic.hpp>
-#include <boost/thread/thread.hpp>
+#include <atomic>
+#include <thread>
+
+using std::atomic;
+using std::thread;
+namespace this_thread = std::this_thread;
 
 
 enum e_LogLevel 
@@ -101,9 +105,9 @@ private:
 	unsigned int m_LogType;
 	unsigned int m_LogLevel;
 
-	boost::thread *m_LogThread;
-	boost::atomic<bool> m_LogThreadAlive;
-	boost::thread::id m_MainThreadID;
+	thread *m_LogThread;
+	atomic<bool> m_LogThreadAlive;
+	thread::id m_MainThreadID;
 
 	boost::lockfree::queue<
 			m_SLogData* //, 
