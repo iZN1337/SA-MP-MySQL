@@ -13,9 +13,6 @@
 #include "malloc.h"
 #include <cmath>
 
-#include <thread>
-#include <future>
-
 
 logprintf_t logprintf;
 
@@ -24,7 +21,7 @@ logprintf_t logprintf;
 cell AMX_NATIVE_CALL Native::orm_create(AMX* amx, cell* params)
 {
 	int connection_id = params[2];
-	char *table_name = nullptr;
+	char *table_name = NULL;
 	amx_StrParam(amx, params[1], table_name);
 
 	CLog::Get()->LogFunction(LOG_DEBUG, "orm_create", "table: \"%s\", connectionHandle: %d", table_name, connection_id);
@@ -83,8 +80,8 @@ cell AMX_NATIVE_CALL Native::orm_select(AMX* amx, cell* params)
 	const int ConstParamCount = 3;
 	unsigned int orm_id = params[1];
 	char 
-		*cb_format = nullptr,
-		*cb_name = nullptr;
+		*cb_format = NULL,
+		*cb_name = NULL;
 	amx_StrParam(amx, params[3], cb_format);
 	amx_StrParam(amx, params[2], cb_name);
 
@@ -93,13 +90,13 @@ cell AMX_NATIVE_CALL Native::orm_select(AMX* amx, cell* params)
 	if(!COrm::IsValid(orm_id))
 		return ERROR_INVALID_ORM_ID("orm_select", orm_id);
 
-	if(cb_format != nullptr && strlen(cb_format) != ( (params[0]/4) - ConstParamCount ))
+	if(cb_format != NULL && strlen(cb_format) != ( (params[0]/4) - ConstParamCount ))
 		return CLog::Get()->LogFunction(LOG_ERROR, "orm_select", "callback parameter count does not match format specifier length");
 
 
 	COrm *OrmObject = COrm::GetOrm(orm_id);
-	CMySQLQuery *Query = CMySQLQuery::Create(nullptr, OrmObject->GetConnectionHandle(), cb_name, cb_format, true, OrmObject, ORM_QUERYTYPE_SELECT);
-	if(Query != nullptr)
+	CMySQLQuery *Query = CMySQLQuery::Create(NULL, OrmObject->GetConnectionHandle(), cb_name, cb_format, true, OrmObject, ORM_QUERYTYPE_SELECT);
+	if(Query != NULL)
 	{
 		if(Query->Callback->Name.length() > 0)
 			Query->Callback->FillCallbackParams(amx, params, ConstParamCount);
@@ -129,8 +126,8 @@ cell AMX_NATIVE_CALL Native::orm_update(AMX* amx, cell* params)
 	
 
 	COrm *OrmObject = COrm::GetOrm(orm_id);
-	CMySQLQuery *Query = CMySQLQuery::Create(nullptr, OrmObject->GetConnectionHandle(), nullptr, nullptr, true, OrmObject, ORM_QUERYTYPE_UPDATE);
-	if(Query != nullptr)
+	CMySQLQuery *Query = CMySQLQuery::Create(NULL, OrmObject->GetConnectionHandle(), NULL, NULL, true, OrmObject, ORM_QUERYTYPE_UPDATE);
+	if(Query != NULL)
 	{
 		if(CLog::Get()->IsLogLevel(LOG_DEBUG))
 		{
@@ -151,8 +148,8 @@ cell AMX_NATIVE_CALL Native::orm_insert(AMX* amx, cell* params)
 	const int ConstParamCount = 3;
 	unsigned int orm_id = params[1];
 	char 
-		*cb_format = nullptr,
-		*cb_name = nullptr;
+		*cb_format = NULL,
+		*cb_name = NULL;
 	amx_StrParam(amx, params[3], cb_format);
 	amx_StrParam(amx, params[2], cb_name);
 
@@ -161,13 +158,13 @@ cell AMX_NATIVE_CALL Native::orm_insert(AMX* amx, cell* params)
 	if(!COrm::IsValid(orm_id))
 		return ERROR_INVALID_ORM_ID("orm_insert", orm_id);
 
-	if(cb_format != nullptr && strlen(cb_format) != ( (params[0]/4) - ConstParamCount ))
+	if(cb_format != NULL && strlen(cb_format) != ( (params[0]/4) - ConstParamCount ))
 		return CLog::Get()->LogFunction(LOG_ERROR, "orm_insert", "callback parameter count does not match format specifier length");
 
 
 	COrm *OrmObject = COrm::GetOrm(orm_id);
-	CMySQLQuery *Query = CMySQLQuery::Create(nullptr, OrmObject->GetConnectionHandle(), cb_name, cb_format, true, OrmObject, ORM_QUERYTYPE_INSERT);
-	if(Query != nullptr)
+	CMySQLQuery *Query = CMySQLQuery::Create(NULL, OrmObject->GetConnectionHandle(), cb_name, cb_format, true, OrmObject, ORM_QUERYTYPE_INSERT);
+	if(Query != NULL)
 	{
 		if(Query->Callback->Name.length() > 0)
 			Query->Callback->FillCallbackParams(amx, params, ConstParamCount);
@@ -197,8 +194,8 @@ cell AMX_NATIVE_CALL Native::orm_delete(AMX* amx, cell* params)
 
 
 	COrm *OrmObject = COrm::GetOrm(orm_id);
-	CMySQLQuery *Query = CMySQLQuery::Create(nullptr, OrmObject->GetConnectionHandle(), nullptr, nullptr, true, OrmObject, ORM_QUERYTYPE_DELETE);
-	if(Query != nullptr)
+	CMySQLQuery *Query = CMySQLQuery::Create(NULL, OrmObject->GetConnectionHandle(), NULL, NULL, true, OrmObject, ORM_QUERYTYPE_DELETE);
+	if(Query != NULL)
 	{
 
 		if(CLog::Get()->IsLogLevel(LOG_DEBUG))
@@ -223,8 +220,8 @@ cell AMX_NATIVE_CALL Native::orm_save(AMX* amx, cell* params)
 	const int ConstParamCount = 3;
 	unsigned int orm_id = params[1];
 	char 
-		*cb_format = nullptr,
-		*cb_name = nullptr;
+		*cb_format = NULL,
+		*cb_name = NULL;
 	amx_StrParam(amx, params[3], cb_format);
 	amx_StrParam(amx, params[2], cb_name);
 
@@ -233,13 +230,13 @@ cell AMX_NATIVE_CALL Native::orm_save(AMX* amx, cell* params)
 	if(!COrm::IsValid(orm_id))
 		return ERROR_INVALID_ORM_ID("orm_save", orm_id);
 
-	if(cb_format != nullptr && strlen(cb_format) != ( (params[0]/4) - ConstParamCount ))
+	if(cb_format != NULL && strlen(cb_format) != ( (params[0]/4) - ConstParamCount ))
 		return CLog::Get()->LogFunction(LOG_ERROR, "orm_save", "callback parameter count does not match format specifier length");
 
 
 	COrm *OrmObject = COrm::GetOrm(orm_id);
-	CMySQLQuery *Query = CMySQLQuery::Create(nullptr, OrmObject->GetConnectionHandle(), cb_name, cb_format, true, OrmObject, ORM_QUERYTYPE_SAVE);
-	if(Query != nullptr)
+	CMySQLQuery *Query = CMySQLQuery::Create(NULL, OrmObject->GetConnectionHandle(), cb_name, cb_format, true, OrmObject, ORM_QUERYTYPE_SAVE);
+	if(Query != NULL)
 	{
 		if(Query->Callback->Name.length() > 0)
 			Query->Callback->FillCallbackParams(amx, params, ConstParamCount);
@@ -260,8 +257,8 @@ cell AMX_NATIVE_CALL Native::orm_save(AMX* amx, cell* params)
 //native orm_addvar(ORM:id, &{Float, _}:var, var_datatype:datatype, var_maxlen, varname[]);
 cell AMX_NATIVE_CALL Native::orm_addvar(AMX* amx, cell* params)
 {
-	char *var_name = nullptr;
-	cell *var_address = nullptr;
+	char *var_name = NULL;
+	cell *var_address = NULL;
 
 	unsigned int orm_id = params[1];
 	amx_GetAddr(amx, params[2], &var_address);
@@ -289,7 +286,7 @@ cell AMX_NATIVE_CALL Native::orm_addvar(AMX* amx, cell* params)
 cell AMX_NATIVE_CALL Native::orm_setkey(AMX* amx, cell* params)
 {
 	unsigned int orm_id = params[1];
-	char *var_name = nullptr;
+	char *var_name = NULL;
 	amx_StrParam(amx, params[2], var_name);
 
 	CLog::Get()->LogFunction(LOG_DEBUG, "orm_setkey", "orm_id: %d, varname: \"%s\"", orm_id, var_name);
@@ -297,7 +294,7 @@ cell AMX_NATIVE_CALL Native::orm_setkey(AMX* amx, cell* params)
 	if(!COrm::IsValid(orm_id))
 		return ERROR_INVALID_ORM_ID("orm_setkey", orm_id);
 
-	if(var_name != nullptr)
+	if(var_name != NULL)
 		COrm::GetOrm(orm_id)->SetVariableAsKey(var_name);
 	else
 		CLog::Get()->LogFunction(LOG_ERROR, "orm_setkey", "empty variable name specified");
@@ -316,7 +313,7 @@ cell AMX_NATIVE_CALL Native::cache_affected_rows(AMX* amx, cell* params)
 		return ERROR_INVALID_CONNECTION_HANDLE("cache_affected_rows", connection_id);
 
 	CMySQLResult *Result = CMySQLHandle::GetHandle(connection_id)->GetActiveResult();
-	if(Result == nullptr)
+	if(Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_affected_rows", "no active cache");
 	
 	return static_cast<cell>(Result->AffectedRows());
@@ -333,7 +330,7 @@ cell AMX_NATIVE_CALL Native::cache_warning_count(AMX* amx, cell* params)
 		return ERROR_INVALID_CONNECTION_HANDLE("cache_warning_count", connection_id);
 	
 	CMySQLResult *Result = CMySQLHandle::GetHandle(connection_id)->GetActiveResult();
-	if(Result == nullptr)
+	if(Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_warning_count", "no active cache");
 	
 	return static_cast<cell>(Result->WarningCount());
@@ -350,7 +347,7 @@ cell AMX_NATIVE_CALL Native::cache_insert_id(AMX* amx, cell* params)
 		return ERROR_INVALID_CONNECTION_HANDLE("cache_insert_id", connection_id);
 
 	CMySQLResult *Result = CMySQLHandle::GetHandle(connection_id)->GetActiveResult();
-	if(Result == nullptr)
+	if(Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_insert_id", "no active cache");
 	
 	return static_cast<cell>(Result->InsertID());
@@ -854,11 +851,11 @@ cell AMX_NATIVE_CALL Native::mysql_tquery(AMX* amx, cell* params)
 	if (cb_format != NULL)
 		CCallback::FillCallbackParams(CB_Params, cb_format, amx, params, ConstParamCount);
 
-	function<CMySQLQuery(CMySQLConnection*)> QueryFunc = std::bind(&CMySQLQuery::Create,
-		std::move(Query), std::placeholders::_1,
-		std::move(CB_Name), std::move(CB_Params)
+	function<CMySQLQuery(CMySQLConnection*)> QueryFunc = boost::bind(&CMySQLQuery::Create,
+		boost::move(Query), _1,
+		boost::move(CB_Name), boost::move(CB_Params)
 	);
-	Handle->QueueQuery(std::move(QueryFunc));
+	Handle->QueueQuery(boost::move(QueryFunc));
 	return 1;
 }
 
@@ -884,7 +881,7 @@ cell AMX_NATIVE_CALL Native::mysql_query(AMX* amx, cell* params)
 	string query(query_str != NULL ? query_str : string());
 	int stored_result_id = 0;
 	CMySQLHandle *Handle = CMySQLHandle::GetHandle(connection_id);
-	CMySQLQuery QueryObj (CMySQLQuery::Create(std::move(query), Handle->GetMainConnection(), string(), stack<boost::variant<cell, string>>()));
+	CMySQLQuery QueryObj (CMySQLQuery::Create(boost::move(query), Handle->GetMainConnection(), string(), stack<boost::variant<cell, string>>()));
 
 	if(use_cache == true)
 	{

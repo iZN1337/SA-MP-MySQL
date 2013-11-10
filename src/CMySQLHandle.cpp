@@ -7,8 +7,7 @@
 #include "CMySQLQuery.h"
 #include "CCallback.h"
 
-#include <chrono>
-namespace chrono = std::chrono;
+#include <boost/chrono.hpp>
 
 
 unordered_map<int, CMySQLHandle *> CMySQLHandle::SQLHandle;
@@ -26,7 +25,7 @@ CMySQLHandle::CMySQLHandle(int id) :
 
 	m_QueryCounter(0),
 	m_QueryThreadRunning(true),
-	m_QueryStashThread(std::bind(&CMySQLHandle::ExecThreadStashFunc, this))
+	m_QueryStashThread(boost::bind(&CMySQLHandle::ExecThreadStashFunc, this))
 {
 	CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::CMySQLHandle", "constructor called");
 }
@@ -48,12 +47,12 @@ CMySQLHandle::~CMySQLHandle()
 void CMySQLHandle::WaitForQueryExec() 
 {
 	while (!m_QueryQueue.empty())
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		this_thread::sleep_for(boost::chrono::milliseconds(5));
 }
 
 CMySQLHandle *CMySQLHandle::Create(string host, string user, string pass, string db, size_t port, size_t pool_size, bool reconnect) 
 {
-	CMySQLHandle *handle = nullptr;
+	CMySQLHandle *handle = NULL;
 	CMySQLConnection *main_connection = CMySQLConnection::Create(host, user, pass, db, port, reconnect);
 	if (MySQLOptions.DuplicateConnections == false && SQLHandle.size() > 0) {
 		//code used for checking duplicate connections
@@ -67,9 +66,8 @@ CMySQLHandle *CMySQLHandle::Create(string host, string user, string pass, string
 			}
 		}
 	}
-	if(handle == nullptr) 
-	{
-		CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::Create", "creating new connection..");
+	if(handle == NULL) {
+			CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::Create", "creating new connection..");
 
 		int id = 1;
 		if(SQLHandle.size() > 0) 
@@ -106,8 +104,8 @@ void CMySQLHandle::Destroy()
 
 void CMySQLHandle::ExecuteOnConnectionPool(void(CMySQLConnection::*func)())
 {
-	for (auto &t : m_ConnectionPool)
-		(t->*func)();
+	for(unordered_set<CMySQLConnection*>::iterator c = m_ConnectionPool.begin(), end = m_ConnectionPool.end(); c != end; ++c)
+		((*c)->*func)();
 }
 
 int CMySQLHandle::SaveActiveResult() 
@@ -134,7 +132,7 @@ int CMySQLHandle::SaveActiveResult()
 			}
 
 			m_ActiveResultID = id;
-			m_SavedResults.insert({ id, m_ActiveResult });
+			m_SavedResults.insert( std::map<int, CMySQLResult*>::value_type(id, m_ActiveResult) );
 			
 			CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::SaveActiveResult", "cache saved with id = %d", id);
 			return id; 
@@ -174,9 +172,9 @@ bool CMySQLHandle::SetActiveResult(int resultid)
 		if(m_SavedResults.find(resultid) != m_SavedResults.end()) 
 		{
 			CMySQLResult *cResult = m_SavedResults.at(resultid);
-			if(cResult != nullptr) 
+			if(cResult != NULL) 
 			{
-				if(m_ActiveResult != nullptr)
+				if(m_ActiveResult != NULL)
 					if (m_ActiveResultID == 0) //if cache not saved
 						delete m_ActiveResult; //delete unsaved cache
 				
@@ -223,30 +221,30 @@ void CMySQLHandle::ExecThreadStashFunc()
 	{
 		while (!m_QueryQueue.empty())
 		{
-			function<CMySQLQuery(CMySQLConnection*)> QueryFunc (std::move(m_QueryQueue.front()));
+			function<CMySQLQuery(CMySQLConnection*)> QueryFunc (boost::move(m_QueryQueue.front()));
 			m_QueryQueue.pop();
 			bool func_executed = false;
 			do
 			{
-				for (auto &c : m_ConnectionPool)
+				for(unordered_set<CMySQLConnection*>::iterator c = m_ConnectionPool.begin(), end = m_ConnectionPool.end(); c != end; ++c)
 				{
-					CMySQLConnection *connection = c;
+					CMySQLConnection *connection = (*c);
 					if (connection->GetState() == false)
 					{
 						connection->ToggleState(true);
 
-						future<CMySQLQuery> fut = std::async(std::launch::async, QueryFunc, connection);
-						CCallback::AddQueryToQueue(std::move(fut), this);
+						shared_future<CMySQLQuery> fut = boost::async(boost::launch::async, boost::bind(QueryFunc, connection));
+						CCallback::AddQueryToQueue(boost::move(fut), this);
 						func_executed = true;
 						m_QueryCounter++;
 						break;
 					}
 				}
-					this_thread::sleep_for(chrono::milliseconds(10));
+				this_thread::sleep_for(boost::chrono::milliseconds(10));
 			} 
 			while (func_executed == false);
 		}
-		this_thread::sleep_for(chrono::milliseconds(10));
+		this_thread::sleep_for(boost::chrono::milliseconds(10));
 	}
 }
 
@@ -264,14 +262,14 @@ void CMySQLConnection::Destroy()
 
 void CMySQLConnection::Connect() 
 {
-	if(m_Connection == nullptr) 
+	if(m_Connection == NULL) 
 	{
-		m_Connection = mysql_init(nullptr);
-		if (m_Connection == nullptr)
+		m_Connection = mysql_init(NULL);
+		if (m_Connection == NULL)
 			CLog::Get()->LogFunction(LOG_ERROR, "CMySQLConnection::Connect", "MySQL initialization failed");
 	}
 
-	if (!m_IsConnected && !mysql_real_connect(m_Connection, m_Host.c_str(), m_User.c_str(), m_Passw.c_str(), m_Database.c_str(), m_Port, nullptr, 0)) 
+	if (!m_IsConnected && !mysql_real_connect(m_Connection, m_Host.c_str(), m_User.c_str(), m_Passw.c_str(), m_Database.c_str(), m_Port, NULL, NULL)) 
 	{
 		CLog::Get()->LogFunction(LOG_ERROR, "CMySQLConnection::Connect", "(error #%d) %s", mysql_errno(m_Connection), mysql_error(m_Connection));
 
@@ -291,12 +289,12 @@ void CMySQLConnection::Connect()
 
 void CMySQLConnection::Disconnect() 
 {
-	if (m_Connection == nullptr)
+	if (m_Connection == NULL)
 		CLog::Get()->LogFunction(LOG_WARNING, "CMySQLConnection::Disconnect", "no connection available");
 	else 
 	{
 		mysql_close(m_Connection);
-		m_Connection = nullptr;
+		m_Connection = NULL;
 		m_IsConnected = false;
 		CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLConnection::Disconnect", "connection was closed");
 	}
@@ -304,7 +302,7 @@ void CMySQLConnection::Disconnect()
 
 void CMySQLConnection::EscapeString(const char *src, string &dest)
 {
-	if(src != nullptr && m_IsConnected) 
+	if(src != NULL && m_IsConnected) 
 	{
 		size_t SrcLen = strlen(src);
 		char *tmpEscapedStr = (char *)malloc((SrcLen*2 + 1) * sizeof(char));

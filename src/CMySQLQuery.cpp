@@ -11,9 +11,6 @@
 
 #include "misc.h"
 
-#include <boost/thread.hpp>
-#include <boost/thread/future.hpp>
-
 
 CMySQLQuery CMySQLQuery::Create(
 	string query, CMySQLConnection *connection,
@@ -91,7 +88,7 @@ CMySQLQuery CMySQLQuery::Create(
 						for (unsigned int a = 0; a != QueryObj.Result->m_Fields; ++a)
 							row.push_back(mysql_row[a] == NULL ? "NULL" : mysql_row[a]);
 
-						QueryObj.Result->m_Data.push_back(std::move(Row));
+						QueryObj.Result->m_Data.push_back(boost::move(row));
 					}
 
 				}
