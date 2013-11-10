@@ -69,7 +69,7 @@ CMySQLResult::CMySQLResult() :
 	m_Fields(0),
 	m_Rows(0),
 
-	m_Data(nullptr),
+	m_Data(NULL),
 
 	m_InsertID(0),
 	m_AffectedRows(0),
@@ -80,8 +80,8 @@ CMySQLResult::CMySQLResult() :
 
 CMySQLResult::~CMySQLResult() 
 {
-	if (m_Data != nullptr)
-	free(m_Data);
+	if(m_Data != NULL)
+		free(m_Data);
 
 	CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLResult::~CMySQLResult()", "deconstructor called");
 }
