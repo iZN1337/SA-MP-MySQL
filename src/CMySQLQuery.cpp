@@ -83,12 +83,22 @@ CMySQLQuery CMySQLQuery::Create(
 
 					for (size_t r = 0; r != num_rows; ++r)
 					{
-						vector<string> row;
-						row.reserve(QueryObj.Result->m_Fields + 1);
-						for (unsigned int a = 0; a != QueryObj.Result->m_Fields; ++a)
-							row.push_back(mysql_row[a] == NULL ? "NULL" : mysql_row[a]);
+						mysql_row = mysql_fetch_row(mysql_result); 
+						unsigned long *mysql_lengths = mysql_fetch_lengths(mysql_result);
 
-						QueryObj.Result->m_Data.push_back(boost::move(row));
+						//copy mysql result data to our location
+						mem_data[r] = mem_offset;
+						mem_offset += mem_row_size/4;
+						memcpy(mem_data[r], mysql_row, mem_row_size);
+
+						char *mem_row_offset = reinterpret_cast<char*>(mem_data[r] + (size_t)(num_fields+1));
+						for (size_t f = 0; f != num_fields; ++f)
+						{
+							//correct the pointers of the copied mysql result data
+							if (f != 0)
+								mem_row_offset += (size_t)(mysql_lengths[f - 1] + 1);
+							mem_data[r][f] = mem_row_offset;
+						}
 					}
 
 				}
