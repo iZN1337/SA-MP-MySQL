@@ -5,13 +5,11 @@
 #include "CMySQLHandle.h"
 #include "CMySQLQuery.h"
 #include "CMySQLResult.h"
-//#include "COrm.h"
+#include "COrm.h"
 #include "CLog.h"
 
 #include "misc.h"
 #include <cstdio>
-
-#include <boost/chrono.hpp>
 
 
 list<tuple<shared_future<CMySQLQuery>, CMySQLHandle*>> CCallback::m_CallbackQueue;
@@ -35,66 +33,84 @@ void CCallback::ProcessCallbacks()
 			{
 				CMySQLQuery QueryObj = boost::move(future_res.get());
 				CMySQLHandle *Handle = boost::get<1>(*i);
-				bool pass_by_ref = (QueryObj.Callback.Name.find("FJ37DH3JG") != string::npos);
 
 				Handle->DecreaseQueryCounter();
-				
-				for (auto &amx : m_AmxList)
+
+
+				if(QueryObj.Orm.Object != NULL)
 				{
-					int amx_index;
-
-					if (amx_FindPublic(amx, QueryObj.Callback.Name.c_str(), &amx_index) == AMX_ERR_NONE)
+					switch(QueryObj.Orm.Type) 
 					{
-						cell amx_mem_addr = -1; 
-						CLog::Get()->StartCallback(QueryObj.Callback.Name.c_str());
+						case ORM_QUERYTYPE_SELECT:
+							QueryObj.Orm.Object->ApplySelectResult(QueryObj.Result);
+							break;
 
-						while (!QueryObj.Callback.Params.empty())
+						case ORM_QUERYTYPE_INSERT:
+							QueryObj.Orm.Object->ApplyInsertResult(QueryObj.Result);
+							break;
+					}
+				}
+				
+				if(!QueryObj.Callback.Name.empty())
+				{
+					
+					bool pass_by_ref = (QueryObj.Callback.Name.find("FJ37DH3JG") != string::npos);
+					for (auto &amx : m_AmxList)
+					{
+						int amx_index;
+
+						if (amx_FindPublic(amx, QueryObj.Callback.Name.c_str(), &amx_index) == AMX_ERR_NONE)
 						{
-							boost::variant<cell, string> value = boost::move(QueryObj.Callback.Params.top());
-							if (value.type() == typeid(cell))
+							cell amx_mem_addr = -1; 
+							CLog::Get()->StartCallback(QueryObj.Callback.Name.c_str());
+
+							while (!QueryObj.Callback.Params.empty())
 							{
-								if (pass_by_ref)
+								boost::variant<cell, string> value = boost::move(QueryObj.Callback.Params.top());
+								if (value.type() == typeid(cell))
+								{
+									if (pass_by_ref)
+									{
+										cell tmp_addr;
+										amx_PushArray(amx, &tmp_addr, NULL, (cell*)&boost::get<cell>(value), 1);
+										if (amx_mem_addr < NULL)
+											amx_mem_addr = tmp_addr;
+									}
+									else
+										amx_Push(amx, boost::get<cell>(value));
+								}
+								else
 								{
 									cell tmp_addr;
-									amx_PushArray(amx, &tmp_addr, NULL, (cell*)&boost::get<cell>(value), 1);
+									amx_PushString(amx, &tmp_addr, NULL, boost::get<string>(value).c_str(), 0, 0);
 									if (amx_mem_addr < NULL)
 										amx_mem_addr = tmp_addr;
 								}
-								else
-									amx_Push(amx, boost::get<cell>(value));
-							}
-							else
-							{
-								cell tmp_addr;
-								amx_PushString(amx, &tmp_addr, NULL, boost::get<string>(value).c_str(), 0, 0);
-								if (amx_mem_addr < NULL)
-									amx_mem_addr = tmp_addr;
+
+								QueryObj.Callback.Params.pop();
 							}
 
-							QueryObj.Callback.Params.pop();
+							Handle->SetActiveResult(QueryObj.Result);
+							CMySQLHandle::ActiveHandle = Handle;
+
+							cell amx_ret;
+							amx_Exec(amx, &amx_ret, amx_index);
+							if (amx_mem_addr >= NULL)
+								amx_Release(amx, amx_mem_addr);
+
+							CMySQLHandle::ActiveHandle = NULL;
+
+							if (Handle->IsActiveResultSaved() == false)
+								delete Handle->GetActiveResult();
+
+							Handle->SetActiveResult((CMySQLResult*)NULL);
+
+							CLog::Get()->EndCallback();
+
+							break; //we have found our callback, exit loop
 						}
-
-						Handle->SetActiveResult(QueryObj.Result);
-						CMySQLHandle::ActiveHandle = Handle;
-
-						cell amx_ret;
-						amx_Exec(amx, &amx_ret, amx_index);
-						if (amx_mem_addr >= NULL)
-							amx_Release(amx, amx_mem_addr);
-
-						CMySQLHandle::ActiveHandle = NULL;
-
-						if (Handle->IsActiveResultSaved() == false)
-							delete Handle->GetActiveResult();
-
-						Handle->SetActiveResult((CMySQLResult*)NULL);
-
-						CLog::Get()->EndCallback();
-
-						break; //we have found our callback, exit loop
 					}
 				}
-
 
 				i = m_CallbackQueue.erase(i);
 			}

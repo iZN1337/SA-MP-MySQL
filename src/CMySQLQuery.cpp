@@ -2,19 +2,18 @@
 
 #include <cstdio>
 
-
-#include "CMySQLQuery.h"
 #include "CMySQLHandle.h"
-#include "CCallback.h"
-//#include "COrm.h"
+#include "CMySQLResult.h"
+#include "CMySQLQuery.h"
 #include "CLog.h"
 
 #include "misc.h"
 
 
 CMySQLQuery CMySQLQuery::Create(
-	string query, CMySQLConnection *connection,
-	string cbname, stack<boost::variant<cell, string>> cbparams)
+	string query, CMySQLConnection *connection, unsigned int connection_id,
+	string cbname, stack<boost::variant<cell, string>> cbparams,
+	COrm *orm_object /*= NULL*/, unsigned short orm_querytype /*= 0*/)
 {
 	CMySQLQuery QueryObj;
 
@@ -22,6 +21,9 @@ CMySQLQuery CMySQLQuery::Create(
 	QueryObj.Query = boost::move(query);
 	QueryObj.Callback.Name = boost::move(cbname);
 	QueryObj.Callback.Params = boost::move(cbparams);
+	QueryObj.Orm.Object = orm_object;
+	QueryObj.Orm.Type = orm_querytype;
+
 
 
 	MYSQL *mysql_connection = QueryObj.Connection->GetMySQLPointer();
@@ -57,7 +59,6 @@ CMySQLQuery CMySQLQuery::Create(
 					const my_ulonglong num_rows = QueryObj.Result->m_Rows = mysql_num_rows(mysql_result);
 					const unsigned int num_fields = QueryObj.Result->m_Fields = mysql_num_fields(mysql_result);
 								  
-					//QueryObj.Result->m_Data.reserve((unsigned int)QueryObj.Result->m_Rows + 1);
 					QueryObj.Result->m_FieldNames.reserve(QueryObj.Result->m_Fields + 1);
 
 					
@@ -162,7 +163,7 @@ CMySQLQuery CMySQLQuery::Create(
 				QueryObj.Callback.Params.push(error_str);
 				QueryObj.Callback.Params.push(QueryObj.Callback.Name);
 				QueryObj.Callback.Params.push(QueryObj.Query);
-				QueryObj.Callback.Params.push(static_cast<cell>(1337)); //TODO: THIS IS IMPORTANT!!!!!!
+				QueryObj.Callback.Params.push(static_cast<cell>(connection_id));
 
 				QueryObj.Callback.Name = "OnQueryError";
 
@@ -174,9 +175,4 @@ CMySQLQuery CMySQLQuery::Create(
 	connection->ToggleState(false);
 
 	return QueryObj;
-}
-
-CMySQLQuery::~CMySQLQuery()
-{
-	//delete Result;
 }
