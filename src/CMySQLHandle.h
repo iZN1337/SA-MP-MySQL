@@ -5,6 +5,7 @@
 
 #include <string>
 #include <thread>
+#include <future>
 #include <unordered_map>
 #include <forward_list>
 #include <tuple>
@@ -16,6 +17,7 @@ using std::string;
 using std::unordered_map;
 using std::forward_list;
 using std::thread;
+using std::future;
 using std::tuple;
 using std::function;
 using std::queue;

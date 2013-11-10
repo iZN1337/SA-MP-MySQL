@@ -231,7 +231,7 @@ void CMySQLHandle::ExecThreadStashFunc()
 					{
 						connection->ToggleState(true);
 
-						std::future<CMySQLQuery> fut = std::async(std::launch::async, QueryFunc, connection);
+						future<CMySQLQuery> fut = std::async(std::launch::async, QueryFunc, connection);
 						CCallback::AddQueryToQueue(std::move(fut), this);
 						func_executed = true;
 						m_QueryCounter++;
