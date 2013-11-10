@@ -11,6 +11,9 @@
 
 #include "misc.h"
 
+#include <boost/thread.hpp>
+#include <boost/thread/future.hpp>
+
 
 CMySQLQuery CMySQLQuery::Create(
 	string query, CMySQLConnection *connection,
@@ -19,13 +22,13 @@ CMySQLQuery CMySQLQuery::Create(
 	CMySQLQuery QueryObj;
 
 	QueryObj.Connection = connection;
-	QueryObj.Query = std::move(query);
-	QueryObj.Callback.Name = std::move(cbname);
-	QueryObj.Callback.Params = std::move(cbparams);
+	QueryObj.Query = boost::move(query);
+	QueryObj.Callback.Name = boost::move(cbname);
+	QueryObj.Callback.Params = boost::move(cbparams);
 
 
 	MYSQL *mysql_connection = QueryObj.Connection->GetMySQLPointer();
-	if (connection != nullptr)
+	if (connection != NULL)
 	{
 		mysql_thread_init();
 
@@ -45,7 +48,7 @@ CMySQLQuery CMySQLQuery::Create(
 			//why should we process the result if it won't and can't be used?
 			if (QueryObj.Callback.Name.length() > 0)
 			{
-				if (mysql_result != nullptr)
+				if (mysql_result != NULL)
 				{
 					MYSQL_FIELD *mysql_field;
 					MYSQL_ROW mysql_row;
@@ -83,30 +86,12 @@ CMySQLQuery CMySQLQuery::Create(
 
 					for (size_t r = 0; r != num_rows; ++r)
 					{
-						mysql_row = mysql_fetch_row(mysql_result);
-						unsigned long *mysql_lengths = mysql_fetch_lengths(mysql_result);
+						vector<string> Row;
+						Row.reserve(QueryObj.Result->m_Fields + 1);
+						for (unsigned int a = 0; a != QueryObj.Result->m_Fields; ++a)
+							row.push_back(mysql_row[a] == NULL ? "NULL" : mysql_row[a]);
 
-						//copy mysql result data to our location
-						mem_data[r] = mem_offset;
-						mem_offset += mem_row_size/sizeof(char**);
-						memcpy(mem_data[r], mysql_row, mem_row_size);
-
-						char *mem_row_offset = reinterpret_cast<char*>(mem_data[r] + static_cast<size_t>(num_fields+1));
-						for (size_t f = 0; f != num_fields; ++f)
-						{
-							//correct the pointers of the copied mysql result data
-							if (mem_data[r][f] != nullptr) //don't touch NULL values
-							{
-								if (f != 0)
-								{
-									mem_row_offset += static_cast<size_t>(mysql_lengths[f - 1]);
-									if (mem_data[r][f - 1] != nullptr) //if the row value isn't NULL
-										mem_row_offset += 1; //add length for '\0' delimiter
-								}
-
-								mem_data[r][f] = mem_row_offset;
-							}
-						}
+						QueryObj.Result->m_Data.push_back(std::move(Row));
 					}
 
 				}
@@ -134,7 +119,7 @@ CMySQLQuery CMySQLQuery::Create(
 				CLog::Get()->LogFunction(LOG_DEBUG, log_funcname, "no callback specified, skipping result saving");
 			}
 
-			if (mysql_result != nullptr)
+			if (mysql_result != NULL)
 				mysql_free_result(mysql_result);
 		}
 		else  //mysql_real_query failed
@@ -150,7 +135,7 @@ CMySQLQuery CMySQLQuery::Create(
 				CLog::Get()->LogFunction(LOG_WARNING, log_funcname, "lost connection, reconnecting..");
 
 				MYSQL_RES *mysql_res;
-				if ((mysql_res = mysql_store_result(mysql_connection)) != nullptr)
+				if ((mysql_res = mysql_store_result(mysql_connection)) != NULL)
 					mysql_free_result(mysql_res);
 
 				QueryObj.Connection->Disconnect();
@@ -162,7 +147,7 @@ CMySQLQuery CMySQLQuery::Create(
 				//forward OnQueryError(error_id, error[], callback[], query[], connectionHandle);
 				//recycle these structures, change some data
 				
-				//OrmObject = nullptr;
+				//OrmObject = NULL;
 				//OrmQueryType = 0;
 
 				while (QueryObj.Callback.Params.size() > 0)
@@ -185,4 +170,9 @@ CMySQLQuery CMySQLQuery::Create(
 	connection->ToggleState(false);
 
 	return QueryObj;
+}
+
+CMySQLQuery::~CMySQLQuery()
+{
+	//delete Result;
 }

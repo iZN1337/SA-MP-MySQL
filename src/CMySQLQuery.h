@@ -31,8 +31,8 @@ public:
 
 	string Query;
 
-	CMySQLConnection *Connection = nullptr;
-	CMySQLResult *Result = nullptr;
+	CMySQLConnection *Connection;
+	CMySQLResult *Result;
 	struct s_Callback
 	{
 		stack<boost::variant<cell, string>> Params;
@@ -41,8 +41,11 @@ public:
 
 	//COrm *OrmObject;
 	//unsigned short OrmQueryType;
-	CMySQLQuery() {}
-	~CMySQLQuery() {}
+	CMySQLQuery() :
+		Connection(NULL),
+		Result(NULL)
+	{}
+	~CMySQLQuery();
 	
 };
 

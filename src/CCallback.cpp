@@ -83,12 +83,12 @@ void CCallback::ProcessCallbacks()
 						if (amx_mem_addr != -1)
 							amx_Release(amx, amx_mem_addr);
 
-						CMySQLHandle::ActiveHandle = nullptr;
+						CMySQLHandle::ActiveHandle = NULL;
 
 						if (Handle->IsActiveResultSaved() == false)
 							delete Handle->GetActiveResult();
 
-						Handle->SetActiveResult(nullptr);
+						Handle->SetActiveResult((CMySQLResult*)NULL);
 
 						CLog::Get()->EndCallback();
 

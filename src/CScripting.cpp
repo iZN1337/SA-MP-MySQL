@@ -406,9 +406,9 @@ cell AMX_NATIVE_CALL Native::cache_get_row_count(AMX* amx, cell* params)
 	if(!CMySQLHandle::IsValid(connection_id))
 		return ERROR_INVALID_CONNECTION_HANDLE("cache_get_row_count", connection_id);
 
-	CMySQLHandle *Handle = CMySQLHandle::ActiveHandle == nullptr ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
+	CMySQLHandle *Handle = CMySQLHandle::ActiveHandle == NULL ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
 	CMySQLResult *Result = Handle->GetActiveResult();
-	if(Result == nullptr)
+	if(Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_get_row_count", "no active cache");
 
 	return static_cast<cell>(Result->GetRowCount());
@@ -423,9 +423,9 @@ cell AMX_NATIVE_CALL Native::cache_get_field_count(AMX* amx, cell* params)
 	if(!CMySQLHandle::IsValid(connection_id))
 		return ERROR_INVALID_CONNECTION_HANDLE("cache_get_field_count", connection_id);
 
-	CMySQLHandle *Handle = CMySQLHandle::ActiveHandle == nullptr ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
+	CMySQLHandle *Handle = CMySQLHandle::ActiveHandle == NULL ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
 	CMySQLResult *Result = Handle->GetActiveResult();
-	if (Result == nullptr)
+	if (Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_get_field_count", "no active cache");
 
 	return static_cast<cell>(Result->GetFieldCount());
@@ -440,9 +440,9 @@ cell AMX_NATIVE_CALL Native::cache_get_data(AMX* amx, cell* params)
 	if(!CMySQLHandle::IsValid(connection_id))
 		return ERROR_INVALID_CONNECTION_HANDLE("cache_get_data", connection_id);
 	
-	CMySQLHandle *Handle = CMySQLHandle::ActiveHandle == nullptr ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
+	CMySQLHandle *Handle = CMySQLHandle::ActiveHandle == NULL ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
 	CMySQLResult *Result = Handle->GetActiveResult();
-	if (Result == nullptr)
+	if (Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_get_data", "no active cache");
 
 	cell *amx_address;
@@ -466,15 +466,15 @@ cell AMX_NATIVE_CALL Native::cache_get_field_name(AMX* amx, cell* params)
 	if(!CMySQLHandle::IsValid(connection_id))
 		return ERROR_INVALID_CONNECTION_HANDLE("cache_get_field_name", connection_id);
 	
-	CMySQLHandle *Handle = CMySQLHandle::ActiveHandle == nullptr ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
+	CMySQLHandle *Handle = CMySQLHandle::ActiveHandle == NULL ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
 	CMySQLResult *Result = Handle->GetActiveResult();
-	if (Result == nullptr)
+	if (Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_get_field_name", "no active cache");
 	
-	char *field_name = nullptr;
+	char *field_name = NULL;
 	Result->GetFieldName(field_idx, &field_name);
 
-	amx_SetCString(amx, params[2], field_name == nullptr ? "nullptr" : field_name, params[4]);
+	amx_SetCString(amx, params[2], field_name == NULL ? "NULL" : field_name, params[4]);
 	return 1;
 }
 
@@ -495,7 +495,7 @@ cell AMX_NATIVE_CALL Native::cache_get_row(AMX* amx, cell* params)
 		return CLog::Get()->LogFunction(LOG_ERROR, "cache_get_row", "invalid field index");
 
 	int active_cid = -1;
-	if (CMySQLHandle::ActiveHandle != nullptr)
+	if (CMySQLHandle::ActiveHandle != NULL)
 		active_cid = CMySQLHandle::ActiveHandle->GetID();
 
 	if (active_cid != connection_id || !CMySQLHandle::IsValid(connection_id))
@@ -503,13 +503,13 @@ cell AMX_NATIVE_CALL Native::cache_get_row(AMX* amx, cell* params)
 
 	CMySQLHandle *Handle = active_cid == -1 ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
 	CMySQLResult *Result = Handle->GetActiveResult();
-	if (Result == nullptr)
+	if (Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_get_row", "no active cache");
 
-	char *row_data = nullptr;
+	char *row_data = NULL;
 	Result->GetRowData(row_idx, field_idx, &row_data);
 
-	amx_SetCString(amx, params[3], row_data == nullptr ? "nullptr" : row_data, max_len);
+	amx_SetCString(amx, params[3], row_data == NULL ? "NULL" : row_data, max_len);
 	return 1;
 }
 
@@ -523,7 +523,7 @@ cell AMX_NATIVE_CALL Native::cache_get_row_int(AMX* amx, cell* params)
 	CLog::Get()->LogFunction(LOG_DEBUG, "cache_get_row_int", "row: %d, field_idx: %d, connection: %d", row_idx, field_idx, connection_id);
 
 	int active_cid = -1;
-	if (CMySQLHandle::ActiveHandle != nullptr)
+	if (CMySQLHandle::ActiveHandle != NULL)
 		active_cid = CMySQLHandle::ActiveHandle->GetID();
 
 	if (active_cid != connection_id || !CMySQLHandle::IsValid(connection_id))
@@ -531,13 +531,13 @@ cell AMX_NATIVE_CALL Native::cache_get_row_int(AMX* amx, cell* params)
 
 	CMySQLHandle *Handle = active_cid == -1 ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
 	CMySQLResult *Result = Handle->GetActiveResult();
-	if (Result == nullptr)
+	if (Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_get_row_int", "no active cache");
 
-	char *row_data = nullptr;
+	char *row_data = NULL;
 	int return_val = 0;
 	Result->GetRowData(row_idx, field_idx, &row_data);
-	if (row_data != nullptr)
+	if (row_data != NULL)
 	{
 		if(ConvertStrToInt(row_data, return_val) == false)
 		{
@@ -559,7 +559,7 @@ cell AMX_NATIVE_CALL Native::cache_get_row_float(AMX* amx, cell* params)
 	CLog::Get()->LogFunction(LOG_DEBUG, "cache_get_row_float", "row: %d, field_idx: %d, connection: %d", row_idx, field_idx, connection_id);
 
 	int active_cid = -1;
-	if (CMySQLHandle::ActiveHandle != nullptr)
+	if (CMySQLHandle::ActiveHandle != NULL)
 		active_cid = CMySQLHandle::ActiveHandle->GetID();
 
 	if (active_cid != connection_id || !CMySQLHandle::IsValid(connection_id))
@@ -567,13 +567,13 @@ cell AMX_NATIVE_CALL Native::cache_get_row_float(AMX* amx, cell* params)
 
 	CMySQLHandle *Handle = active_cid == -1 ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
 	CMySQLResult *Result = Handle->GetActiveResult();
-	if (Result == nullptr)
+	if (Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_get_row_float", "no active cache");
 
 	float return_val = 0.0f;
-	char *row_data = nullptr;
+	char *row_data = NULL;
 	Result->GetRowData(row_idx, field_idx, &row_data);
-	if (row_data != nullptr)
+	if (row_data != NULL)
 	{
 		if(ConvertStrToFloat(row_data, return_val) == false)
 		{
@@ -592,18 +592,18 @@ cell AMX_NATIVE_CALL Native::cache_get_field_content(AMX* amx, cell* params)
 	int 
 		row_idx = params[1],
 		max_len = params[5];
-	char *field_name = nullptr;
+	char *field_name = NULL;
 	amx_StrParam(amx, params[2], field_name);
 	CLog::Get()->LogFunction(LOG_DEBUG, "cache_get_field_content", "row: %d, field_name: \"%s\", connection: %d, max_len: %d", row_idx, field_name, connection_id, max_len);
 
 	if(row_idx < 0)
 		return CLog::Get()->LogFunction(LOG_ERROR, "cache_get_field_content", "invalid row number");
 
-	if (field_name == nullptr)
+	if (field_name == NULL)
 		return CLog::Get()->LogFunction(LOG_ERROR, "cache_get_field_content", "empty field name specified");
 
 	int active_cid = -1;
-	if (CMySQLHandle::ActiveHandle != nullptr)
+	if (CMySQLHandle::ActiveHandle != NULL)
 		active_cid = CMySQLHandle::ActiveHandle->GetID();
 
 	if (active_cid != connection_id || !CMySQLHandle::IsValid(connection_id))
@@ -611,13 +611,13 @@ cell AMX_NATIVE_CALL Native::cache_get_field_content(AMX* amx, cell* params)
 
 	CMySQLHandle *Handle = active_cid == -1 ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
 	CMySQLResult *Result = Handle->GetActiveResult();
-	if (Result == nullptr)
+	if (Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_get_field_content", "no active cache");
 	
-	char *field_data = nullptr;
+	char *field_data = NULL;
 	Result->GetRowDataByName(row_idx, field_name, &field_data);
 
-	amx_SetCString(amx, params[3], field_data == nullptr ? "nullptr" : field_data, max_len);
+	amx_SetCString(amx, params[3], field_data == NULL ? "NULL" : field_data, max_len);
 	return 1;
 }
 
@@ -626,12 +626,12 @@ cell AMX_NATIVE_CALL Native::cache_get_field_content_int(AMX* amx, cell* params)
 {
 	unsigned int connection_id = params[3];
 	int row_idx = params[1];
-	char *field_name = nullptr;
+	char *field_name = NULL;
 	amx_StrParam(amx, params[2], field_name);
 	CLog::Get()->LogFunction(LOG_DEBUG, "cache_get_field_content_int", "row: %d, field_name: \"%s\", connection: %d", row_idx, field_name, connection_id);
 
 	int active_cid = -1;
-	if (CMySQLHandle::ActiveHandle != nullptr)
+	if (CMySQLHandle::ActiveHandle != NULL)
 		active_cid = CMySQLHandle::ActiveHandle->GetID();
 
 	if (active_cid != connection_id || !CMySQLHandle::IsValid(connection_id))
@@ -639,14 +639,14 @@ cell AMX_NATIVE_CALL Native::cache_get_field_content_int(AMX* amx, cell* params)
 
 	CMySQLHandle *Handle = active_cid == -1 ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
 	CMySQLResult *Result = Handle->GetActiveResult();
-	if (Result == nullptr)
+	if (Result == NULL)
 		CLog::Get()->LogFunction(LOG_WARNING, "cache_get_field_content_int", "no active cache");
 
 	int return_val = 0;
-	char *field_data = nullptr;
+	char *field_data = NULL;
 	Result->GetRowDataByName(row_idx, field_name, &field_data);
 
-	if (field_data != nullptr)
+	if (field_data != NULL)
 	{
 		if(ConvertStrToInt(field_data, return_val) == false)
 		{
@@ -662,12 +662,12 @@ cell AMX_NATIVE_CALL Native::cache_get_field_content_float(AMX* amx, cell* param
 {
 	unsigned int connection_id = params[3];
 	int row_idx = params[1];
-	char *field_name = nullptr;
+	char *field_name = NULL;
 	amx_StrParam(amx, params[2], field_name);
 	CLog::Get()->LogFunction(LOG_DEBUG, "cache_get_field_content_float", "row: %d, field_name: \"%s\", connection: %d", row_idx, field_name, connection_id);
 
 	int active_cid = -1;
-	if (CMySQLHandle::ActiveHandle != nullptr)
+	if (CMySQLHandle::ActiveHandle != NULL)
 		active_cid = CMySQLHandle::ActiveHandle->GetID();
 
 	if (active_cid != connection_id || !CMySQLHandle::IsValid(connection_id))
@@ -675,14 +675,14 @@ cell AMX_NATIVE_CALL Native::cache_get_field_content_float(AMX* amx, cell* param
 
 	CMySQLHandle *Handle = active_cid == -1 ? CMySQLHandle::GetHandle(connection_id) : CMySQLHandle::ActiveHandle;
 	CMySQLResult *Result = Handle->GetActiveResult();
-	if (Result == nullptr)
+	if (Result == NULL)
 		return CLog::Get()->LogFunction(LOG_WARNING, "cache_get_field_content_float", "no active cache");
 
 	float return_val = 0.0f;
-	char *field_data = nullptr;
+	char *field_data = NULL;
 	Result->GetRowDataByName(params[1], field_name, &field_data);
 
-	if (field_data != nullptr)
+	if (field_data != NULL)
 	{
 		if(ConvertStrToFloat(field_data, return_val) == false)
 		{
@@ -697,10 +697,10 @@ cell AMX_NATIVE_CALL Native::cache_get_field_content_float(AMX* amx, cell* param
 cell AMX_NATIVE_CALL Native::mysql_connect(AMX* amx, cell* params)
 {
 	char
-		*host = nullptr, 
-		*user = nullptr, 
-		*db = nullptr, 
-		*pass = nullptr;
+		*host = NULL, 
+		*user = NULL, 
+		*db = NULL, 
+		*pass = NULL;
 
 	amx_StrParam(amx, params[1], host);
 	amx_StrParam(amx, params[2], user);
@@ -713,10 +713,10 @@ cell AMX_NATIVE_CALL Native::mysql_connect(AMX* amx, cell* params)
 
 	CLog::Get()->LogFunction(LOG_DEBUG, "mysql_connect", "host: \"%s\", user: \"%s\", database: \"%s\", password: \"****\", port: %d, autoreconnect: %s", host, user, db, port, auto_reconnect == true ? "true" : "false");
 
-	if(host == nullptr || user == nullptr || db == nullptr)
+	if(host == NULL || user == NULL || db == NULL)
 		return CLog::Get()->LogFunction(LOG_ERROR, "mysql_connect", "empty connection data specified");
 	
-	CMySQLHandle *Handle = CMySQLHandle::Create(host, user, pass != nullptr ? pass : "", db, port, pool_size, auto_reconnect);
+	CMySQLHandle *Handle = CMySQLHandle::Create(host, user, pass != NULL ? pass : "", db, port, pool_size, auto_reconnect);
 	Handle->GetMainConnection()->Connect();
 	Handle->ExecuteOnConnectionPool(&CMySQLConnection::Connect);
 	return static_cast<cell>(Handle->GetID());
@@ -735,7 +735,7 @@ cell AMX_NATIVE_CALL Native::mysql_close(AMX* amx, cell* params)
 	CMySQLHandle *Handle = CMySQLHandle::GetHandle(connection_id);
 	
 	if(Handle == CMySQLHandle::ActiveHandle)
-		CMySQLHandle::ActiveHandle = nullptr;
+		CMySQLHandle::ActiveHandle = NULL;
 
 	if(wait == true)
 		Handle->WaitForQueryExec();
@@ -797,7 +797,7 @@ cell AMX_NATIVE_CALL Native::mysql_current_handle(AMX* amx, cell* params)
 	CLog::Get()->LogFunction(LOG_DEBUG, "mysql_current_handle", "");
 
 	int connection_id = 0;
-	if(CMySQLHandle::ActiveHandle != nullptr)
+	if(CMySQLHandle::ActiveHandle != NULL)
 		connection_id = CMySQLHandle::ActiveHandle->GetID();
 
 	return static_cast<cell>(connection_id);
@@ -823,16 +823,16 @@ cell AMX_NATIVE_CALL Native::mysql_tquery(AMX* amx, cell* params)
 	unsigned int connection_id = params[1];
 
 	char 
-		*query_str = nullptr,
-		*cb_name = nullptr,
-		*cb_format = nullptr;
+		*query_str = NULL,
+		*cb_name = NULL,
+		*cb_format = NULL;
 	amx_StrParam(amx, params[2], query_str);
 	amx_StrParam(amx, params[3], cb_name);
 	amx_StrParam(amx, params[4], cb_format);
 
 	if(CLog::Get()->IsLogLevel(LOG_DEBUG))
 	{
-		string short_query(query_str == nullptr ? "" : query_str);
+		string short_query(query_str == NULL ? "" : query_str);
 		short_query.resize(64);
 		CLog::Get()->LogFunction(LOG_DEBUG, "mysql_tquery", "connection: %d, query: \"%s\", callback: \"%s\", format: \"%s\"", connection_id, short_query.c_str(), cb_name, cb_format);
 	}
@@ -840,18 +840,18 @@ cell AMX_NATIVE_CALL Native::mysql_tquery(AMX* amx, cell* params)
 	if(!CMySQLHandle::IsValid(connection_id))
 		return ERROR_INVALID_CONNECTION_HANDLE("mysql_tquery", connection_id);
 
-	if (cb_format != nullptr && strlen(cb_format) != ((params[0] / 4) - ConstParamCount))
+	if (cb_format != NULL && strlen(cb_format) != ((params[0] / 4) - ConstParamCount))
 		return CLog::Get()->LogFunction(LOG_ERROR, "mysql_tquery", "callback parameter count does not match format specifier length");
 
 	CMySQLHandle *Handle = CMySQLHandle::GetHandle(connection_id);
 	
 	string
-		Query(query_str != nullptr ? query_str : ""),
-		CB_Name(cb_name != nullptr ? cb_name : "");
+		Query(query_str != NULL ? query_str : ""),
+		CB_Name(cb_name != NULL ? cb_name : "");
 
 
 	stack<boost::variant<cell, string>> CB_Params;
-	if (cb_format != nullptr)
+	if (cb_format != NULL)
 		CCallback::FillCallbackParams(CB_Params, cb_format, amx, params, ConstParamCount);
 
 	function<CMySQLQuery(CMySQLConnection*)> QueryFunc = std::bind(&CMySQLQuery::Create,
@@ -867,13 +867,13 @@ cell AMX_NATIVE_CALL Native::mysql_tquery(AMX* amx, cell* params)
 cell AMX_NATIVE_CALL Native::mysql_query(AMX* amx, cell* params)
 {
 	unsigned int connection_id = params[1];
-	char *query_str = nullptr;
+	char *query_str = NULL;
 	amx_StrParam(amx, params[2], query_str);
 	bool use_cache = !!params[3];
 
 	if(CLog::Get()->IsLogLevel(LOG_DEBUG))
 	{
-		string short_query(query_str == nullptr ? "" : query_str);
+		string short_query(query_str == NULL ? "" : query_str);
 		short_query.resize(64);
 		CLog::Get()->LogFunction(LOG_DEBUG, "mysql_query", "connection: %d, query: \"%s\", use_cache: %s", connection_id, short_query.c_str(), use_cache == true ? "true" : "false");
 	}
@@ -881,7 +881,7 @@ cell AMX_NATIVE_CALL Native::mysql_query(AMX* amx, cell* params)
 	if(!CMySQLHandle::IsValid(connection_id))
 		return ERROR_INVALID_CONNECTION_HANDLE("mysql_query", connection_id);
 
-	string query(query_str != nullptr ? query_str : string());
+	string query(query_str != NULL ? query_str : string());
 	int stored_result_id = 0;
 	CMySQLHandle *Handle = CMySQLHandle::GetHandle(connection_id);
 	CMySQLQuery QueryObj (CMySQLQuery::Create(std::move(query), Handle->GetMainConnection(), string(), stack<boost::variant<cell, string>>()));
@@ -892,7 +892,7 @@ cell AMX_NATIVE_CALL Native::mysql_query(AMX* amx, cell* params)
 		Handle->SetActiveResult(QueryObj.Result);
 		//now we can save the result
 		stored_result_id = Handle->SaveActiveResult();
-		QueryObj.Result = nullptr;
+		QueryObj.Result = NULL;
 	}
 	delete QueryObj.Result;
 
@@ -905,12 +905,12 @@ cell AMX_NATIVE_CALL Native::mysql_format(AMX* amx, cell* params)
 {
 	unsigned int connection_id = params[1];
 	size_t dest_len = (size_t)params[3];
-	char *format_str = nullptr;
+	char *format_str = NULL;
 	amx_StrParam(amx, params[4], format_str);
 
 	if(CLog::Get()->IsLogLevel(LOG_DEBUG))
 	{
-		string short_format(format_str == nullptr ? "" : format_str);
+		string short_format(format_str == NULL ? "" : format_str);
 		if(short_format.length() > 128)
 		{
 			short_format.erase(128, short_format.length());
@@ -919,7 +919,7 @@ cell AMX_NATIVE_CALL Native::mysql_format(AMX* amx, cell* params)
 		CLog::Get()->LogFunction(LOG_DEBUG, "mysql_format", "connection: %d, len: %d, format: \"%s\"", connection_id, dest_len, short_format.c_str());
 	}
 
-	if(format_str == nullptr)
+	if(format_str == NULL)
 		return 0;
 
 	if(!CMySQLHandle::IsValid(connection_id))
@@ -989,7 +989,7 @@ cell AMX_NATIVE_CALL Native::mysql_format(AMX* amx, cell* params)
 				++format_str;
 			}
 
-			cell *amx_address = nullptr;
+			cell *amx_address = NULL;
 			amx_GetAddr(amx, params[first_param_idx + param_counter], &amx_address);
 			
 			switch (*format_str)
@@ -1023,9 +1023,9 @@ cell AMX_NATIVE_CALL Native::mysql_format(AMX* amx, cell* params)
 				case 's': 
 				case 'S':
 				{
-					char *str_buf = nullptr;
+					char *str_buf = NULL;
 					amx_StrParam(amx, params[first_param_idx + param_counter], str_buf);
-					if(str_buf != nullptr)
+					if(str_buf != NULL)
 					{
 						for(size_t c=0, len = strlen(str_buf); c < len; ++c)
 						{
@@ -1071,9 +1071,9 @@ cell AMX_NATIVE_CALL Native::mysql_format(AMX* amx, cell* params)
 				case 'e': 
 				case 'E':
 				{
-					char *str_buf = nullptr;
+					char *str_buf = NULL;
 					amx_StrParam(amx, params[first_param_idx + param_counter], str_buf);
-					if(str_buf != nullptr)
+					if(str_buf != NULL)
 					{
 						string escaped_str;
 						Handle->GetMainConnection()->EscapeString(str_buf, escaped_str);
@@ -1153,11 +1153,11 @@ cell AMX_NATIVE_CALL Native::mysql_format(AMX* amx, cell* params)
 cell AMX_NATIVE_CALL Native::mysql_set_charset(AMX* amx, cell* params)
 {
 	unsigned int connection_id = params[2];
-	char *charset = nullptr;
+	char *charset = NULL;
 	amx_StrParam(amx, params[1], charset);
 	CLog::Get()->LogFunction(LOG_DEBUG, "mysql_set_charset", "charset: \"%s\", connection: %d", charset, connection_id);
 
-	if(charset == nullptr)
+	if(charset == NULL)
 		return 0;
 
 	if(!CMySQLHandle::IsValid(connection_id))
@@ -1179,7 +1179,7 @@ cell AMX_NATIVE_CALL Native::mysql_get_charset(AMX* amx, cell* params)
 
 	const char *charset = mysql_character_set_name(CMySQLHandle::GetHandle(connection_id)->GetMainConnection()->GetMySQLPointer());
 
-	amx_SetCString(amx, params[1], charset == nullptr ? "nullptr" : charset, params[3]);
+	amx_SetCString(amx, params[1], charset == NULL ? "NULL" : charset, params[3]);
 	return 1;
 }
 
@@ -1187,13 +1187,13 @@ cell AMX_NATIVE_CALL Native::mysql_get_charset(AMX* amx, cell* params)
 cell AMX_NATIVE_CALL Native::mysql_escape_string(AMX* amx, cell* params)
 {
 	unsigned int connection_id = params[3];
-	char *source_str = nullptr;
+	char *source_str = NULL;
 	amx_StrParam(amx, params[1], source_str);
 	size_t dest_len = params[4];
 
 	if(CLog::Get()->IsLogLevel(LOG_DEBUG))
 	{
-		string short_src(source_str == nullptr ? "" : source_str);
+		string short_src(source_str == NULL ? "" : source_str);
 		if(short_src.length() > 128)
 		{
 			short_src.erase(128, short_src.length());
@@ -1207,7 +1207,7 @@ cell AMX_NATIVE_CALL Native::mysql_escape_string(AMX* amx, cell* params)
 	
 
 	string escaped_str;
-	if(source_str != nullptr) 
+	if(source_str != NULL) 
 	{
 		if(strlen(source_str) >= dest_len)
 			return CLog::Get()->LogFunction(LOG_ERROR, "mysql_escape_string", "destination size is too small (must be at least as big as source)");
@@ -1231,7 +1231,7 @@ cell AMX_NATIVE_CALL Native::mysql_stat(AMX* amx, cell* params)
 	CMySQLHandle *Handle = CMySQLHandle::GetHandle(connection_id);
 	const char *stat_str = mysql_stat(Handle->GetMainConnection()->GetMySQLPointer());
 
-	amx_SetCString(amx, params[1], stat_str == nullptr ? "nullptr" : stat_str, params[3]);
+	amx_SetCString(amx, params[1], stat_str == NULL ? "NULL" : stat_str, params[3]);
 	return 1;
 }
 

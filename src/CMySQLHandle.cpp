@@ -12,17 +12,17 @@ namespace chrono = std::chrono;
 
 
 unordered_map<int, CMySQLHandle *> CMySQLHandle::SQLHandle;
-CMySQLHandle *CMySQLHandle::ActiveHandle = nullptr;
+CMySQLHandle *CMySQLHandle::ActiveHandle = NULL;
 CMySQLOptions MySQLOptions;
 
 
 CMySQLHandle::CMySQLHandle(int id) : 
 	m_MyID(id),
 	
-	m_ActiveResult(nullptr),
+	m_ActiveResult(NULL),
 	m_ActiveResultID(0),
 	
-	m_MainConnection(nullptr),
+	m_MainConnection(NULL),
 
 	m_QueryCounter(0),
 	m_QueryThreadRunning(true),
@@ -35,7 +35,7 @@ CMySQLHandle::~CMySQLHandle()
 {
 	for (unordered_map<int, CMySQLResult*>::iterator it = m_SavedResults.begin(), end = m_SavedResults.end(); it != end; it++)
 		delete it->second;
-
+	
 	m_MainConnection->Destroy();
 	ExecuteOnConnectionPool(&CMySQLConnection::Destroy);
 
@@ -112,7 +112,7 @@ void CMySQLHandle::ExecuteOnConnectionPool(void(CMySQLConnection::*func)())
 
 int CMySQLHandle::SaveActiveResult() 
 {
-	if(m_ActiveResult != nullptr) 
+	if(m_ActiveResult != NULL) 
 	{
 		if(m_ActiveResultID != 0) //if active cache was already saved
 		{
@@ -153,7 +153,7 @@ bool CMySQLHandle::DeleteSavedResult(int resultid)
 			CMySQLResult *ResultHandle = m_SavedResults.at(resultid);
 			if(m_ActiveResult == ResultHandle) 
 			{
-				m_ActiveResult = nullptr;
+				m_ActiveResult = NULL;
 				m_ActiveResultID = 0;
 			}
 			delete ResultHandle;
@@ -193,9 +193,9 @@ bool CMySQLHandle::SetActiveResult(int resultid)
 	{
 		if (m_ActiveResultID == 0) //if cache not saved
 			delete m_ActiveResult; //delete unsaved cache
-		m_ActiveResult = nullptr;
+		m_ActiveResult = NULL;
 		m_ActiveResultID = 0;
-		ActiveHandle = nullptr;
+		ActiveHandle = NULL;
 		CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::SetActiveResult", "invalid result id specified, setting active result to zero");
 	}
 	return true;
