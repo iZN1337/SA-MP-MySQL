@@ -56,8 +56,8 @@ void CCallback::ProcessCallbacks()
 								if (pass_by_ref)
 								{
 									cell tmp_addr;
-									amx_PushArray(amx, &tmp_addr, NULL, (cell*)&boost::get<cell>(value), 1);
-									if (amx_mem_addr < NULL)
+									amx_PushArray(amx, &tmp_addr, nullptr, (cell*)&boost::get<cell>(value), 1);
+									if (amx_mem_addr == -1)
 										amx_mem_addr = tmp_addr;
 								}
 								else
@@ -66,8 +66,8 @@ void CCallback::ProcessCallbacks()
 							else
 							{
 								cell tmp_addr;
-								amx_PushString(amx, &tmp_addr, NULL, boost::get<string>(value).c_str(), 0, 0);
-								if (amx_mem_addr < NULL)
+								amx_PushString(amx, &tmp_addr, nullptr, boost::get<string>(value).c_str(), 0, 0);
+								if (amx_mem_addr == -1)
 									amx_mem_addr = tmp_addr;
 							}
 
@@ -79,7 +79,7 @@ void CCallback::ProcessCallbacks()
 
 						cell amx_ret;
 						amx_Exec(amx, &amx_ret, amx_index);
-						if (amx_mem_addr >= NULL)
+						if (amx_mem_addr != -1)
 							amx_Release(amx, amx_mem_addr);
 
 						CMySQLHandle::ActiveHandle = nullptr;
@@ -157,7 +157,7 @@ void CCallback::FillCallbackParams(stack<boost::variant<cell, string>> &dest, co
 				dest.push(StrBuf == nullptr ? string() : string(StrBuf));
 				break;
 			default:
-				dest.push(string("NULL"));
+				dest.push(string("nullptr"));
 		}
 		ParamIdx++;
 	} while (*(++format));

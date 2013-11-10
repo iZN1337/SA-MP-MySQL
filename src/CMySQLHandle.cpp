@@ -52,7 +52,7 @@ void CMySQLHandle::WaitForQueryExec()
 
 CMySQLHandle *CMySQLHandle::Create(string host, string user, string pass, string db, size_t port, size_t pool_size, bool reconnect) 
 {
-	CMySQLHandle *handle = NULL;
+	CMySQLHandle *handle = nullptr;
 	CMySQLConnection *main_connection = CMySQLConnection::Create(host, user, pass, db, port, reconnect);
 	if (MySQLOptions.DuplicateConnections == false && SQLHandle.size() > 0) {
 		//code used for checking duplicate connections
@@ -66,7 +66,7 @@ CMySQLHandle *CMySQLHandle::Create(string host, string user, string pass, string
 			}
 		}
 	}
-	if(handle == NULL) {
+	if(handle == nullptr) {
 			CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLHandle::Create", "creating new connection..");
 
 		int id = 1;
@@ -170,9 +170,9 @@ bool CMySQLHandle::SetActiveResult(int resultid)
 		if(m_SavedResults.find(resultid) != m_SavedResults.end()) 
 		{
 			CMySQLResult *cResult = m_SavedResults.at(resultid);
-			if(cResult != NULL) 
+			if(cResult != nullptr) 
 			{
-				if(m_ActiveResult != NULL)
+				if(m_ActiveResult != nullptr)
 					if (m_ActiveResultID == 0) //if cache not saved
 						delete m_ActiveResult; //delete unsaved cache
 				
@@ -260,14 +260,14 @@ void CMySQLConnection::Destroy()
 
 void CMySQLConnection::Connect() 
 {
-	if(m_Connection == NULL) 
+	if(m_Connection == nullptr) 
 	{
-		m_Connection = mysql_init(NULL);
-		if (m_Connection == NULL)
+		m_Connection = mysql_init(nullptr);
+		if (m_Connection == nullptr)
 			CLog::Get()->LogFunction(LOG_ERROR, "CMySQLConnection::Connect", "MySQL initialization failed");
 	}
 
-	if (!m_IsConnected && !mysql_real_connect(m_Connection, m_Host.c_str(), m_User.c_str(), m_Passw.c_str(), m_Database.c_str(), m_Port, NULL, NULL)) 
+	if (!m_IsConnected && !mysql_real_connect(m_Connection, m_Host.c_str(), m_User.c_str(), m_Passw.c_str(), m_Database.c_str(), m_Port, nullptr, 0)) 
 	{
 		CLog::Get()->LogFunction(LOG_ERROR, "CMySQLConnection::Connect", "(error #%d) %s", mysql_errno(m_Connection), mysql_error(m_Connection));
 
@@ -287,12 +287,12 @@ void CMySQLConnection::Connect()
 
 void CMySQLConnection::Disconnect() 
 {
-	if (m_Connection == NULL)
+	if (m_Connection == nullptr)
 		CLog::Get()->LogFunction(LOG_WARNING, "CMySQLConnection::Disconnect", "no connection available");
 	else 
 	{
 		mysql_close(m_Connection);
-		m_Connection = NULL;
+		m_Connection = nullptr;
 		m_IsConnected = false;
 		CLog::Get()->LogFunction(LOG_DEBUG, "CMySQLConnection::Disconnect", "connection was closed");
 	}
@@ -300,7 +300,7 @@ void CMySQLConnection::Disconnect()
 
 void CMySQLConnection::EscapeString(const char *src, string &dest)
 {
-	if(src != NULL && m_IsConnected) 
+	if(src != nullptr && m_IsConnected) 
 	{
 		size_t SrcLen = strlen(src);
 		char *tmpEscapedStr = (char *)malloc((SrcLen*2 + 1) * sizeof(char));

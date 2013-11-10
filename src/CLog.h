@@ -36,7 +36,7 @@ class CLog
 public:
 	static inline CLog *Get() 
 	{
-		if(m_Instance == NULL)
+		if(m_Instance == nullptr)
 			m_Instance = new CLog;
 		return m_Instance;
 	}
@@ -69,7 +69,7 @@ private:
 	{
 		m_SLogData() :
 			Status(LOG_NONE),
-			Name(NULL), Msg(NULL),
+			Name(nullptr), Msg(nullptr),
 			Info(LOG_INFO_NONE)
 		{}
 
@@ -88,7 +88,7 @@ private:
 
 	CLog() : 
 		m_LogLevel(LOG_ERROR | LOG_WARNING), 
-		m_LogThread(NULL), 
+		m_LogThread(nullptr), 
 		m_LogThreadAlive(true),
 		m_LogType(LOG_TYPE_TEXT)
 	{}

@@ -73,7 +73,7 @@ CMySQLQuery CMySQLQuery::Create(
 						vector<string> Row;
 						Row.reserve(QueryObj.Result->m_Fields + 1);
 						for (unsigned int a = 0; a != QueryObj.Result->m_Fields; ++a)
-							Row.push_back(mysql_row[a] == nullptr ? "NULL" : mysql_row[a]);
+							Row.push_back(mysql_row[a] == nullptr ? "nullptr" : mysql_row[a]);
 
 						QueryObj.Result->m_Data.push_back(std::move(Row));
 					}
@@ -119,7 +119,7 @@ CMySQLQuery CMySQLQuery::Create(
 				CLog::Get()->LogFunction(LOG_WARNING, log_funcname, "lost connection, reconnecting..");
 
 				MYSQL_RES *mysql_res;
-				if ((mysql_res = mysql_store_result(mysql_connection)) != NULL)
+				if ((mysql_res = mysql_store_result(mysql_connection)) != nullptr)
 					mysql_free_result(mysql_res);
 
 				QueryObj.Connection->Disconnect();
@@ -131,7 +131,7 @@ CMySQLQuery CMySQLQuery::Create(
 				//forward OnQueryError(error_id, error[], callback[], query[], connectionHandle);
 				//recycle these structures, change some data
 				
-				//OrmObject = NULL;
+				//OrmObject = nullptr;
 				//OrmQueryType = 0;
 
 				while (QueryObj.Callback.Params.size() > 0)

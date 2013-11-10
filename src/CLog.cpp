@@ -10,7 +10,7 @@ using std::string;
 #include "CLog.h"
 
 
-CLog *CLog::m_Instance = NULL;
+CLog *CLog::m_Instance = nullptr;
 
 
 void CLog::ProcessLog() 
@@ -33,7 +33,7 @@ void CLog::ProcessLog()
 
 	while(m_LogThreadAlive) 
 	{
-		m_SLogData *LogData = NULL;
+		m_SLogData *LogData = nullptr;
 		while(m_LogQueue.pop(LogData)) 
 		{
 			if(LogData->Info == LOG_INFO_CALLBACK_BEGIN)
@@ -111,8 +111,8 @@ void CLog::SetLogType(unsigned int logtype)
 
 	if(logtype == LOG_TYPE_HTML) 
 	{
-		if(m_LogThread == NULL)
 			m_LogThread = new boost::thread(&CLog::ProcessLog, this);
+		if(m_LogThread == nullptr)
 
 		filename.append(".html");
 	}
@@ -196,7 +196,7 @@ int CLog::LogText(unsigned int loglevel, char* text)
         strftime(timeform, sizeof(timeform), "%X", timeinfo);
 
         FILE *log_file = fopen(m_LogFileName, "a");
-        if(log_file != NULL) 
+        if(log_file != nullptr) 
 		{
             fprintf(log_file, "[%s] [%s] %s\n", timeform, prefix, text);
             fclose(log_file);
@@ -244,7 +244,7 @@ void CLog::EndCallback()
 
 CLog::~CLog() 
 {
-	if(m_LogThread != NULL) 
+	if(m_LogThread != nullptr) 
 	{
 		m_LogThreadAlive = false;
 

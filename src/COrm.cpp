@@ -26,10 +26,10 @@ int COrm::Create(char *table, CMySQLHandle *connhandle)
 {
 	CLog::Get()->LogFunction(LOG_DEBUG, "COrm::Create", "creating new orm object..");
 
-	if(table == NULL)
+	if(table == nullptr)
 		return CLog::Get()->LogFunction(LOG_ERROR, "COrm::Create", "empty table name specified");
 
-	if(connhandle == NULL)
+	if(connhandle == nullptr)
 		return CLog::Get()->LogFunction(LOG_ERROR, "COrm::Create", "invalid connection handle");
 
 	int id = 1;
@@ -67,7 +67,7 @@ void COrm::ApplyActiveResult(unsigned int row)
 	CMySQLResult *result = m_ConnHandle->GetActiveResult();
 	
 	m_ErrorID = ORM_ERROR_NO_DATA;
-	if(result == NULL)
+	if(result == nullptr)
 		return (void)CLog::Get()->LogFunction(LOG_ERROR, "COrm::ApplyActiveResult", "no active result");
 
 	if(row >= result->GetRowCount())
@@ -78,10 +78,10 @@ void COrm::ApplyActiveResult(unsigned int row)
 	{
 		SVarInfo *Var = m_Vars.at(v);
 
-		char *data = NULL;
+		char *data = nullptr;
 		result->GetRowDataByName(row, Var->Name.c_str(), &data);
 
-		if(data != NULL) 
+		if(data != nullptr) 
 		{
 			switch(Var->Datatype) 
 			{
@@ -101,18 +101,18 @@ void COrm::ApplyActiveResult(unsigned int row)
 				} 
 				break;
 				case DATATYPE_STRING:
-					amx_SetString(Var->Address, data != NULL ? data : "NULL", 0, 0, Var->MaxLen);
+					amx_SetString(Var->Address, data != nullptr ? data : "nullptr", 0, 0, Var->MaxLen);
 				break;
 			}
 		}
 	}
 
 	//also check for key in result
-	if(m_KeyVar != NULL) 
+	if(m_KeyVar != nullptr) 
 	{
-		char *key_data = NULL;
+		char *key_data = nullptr;
 		result->GetRowDataByName(row, m_KeyVar->Name.c_str(), &key_data);
-		if(key_data != NULL) 
+		if(key_data != nullptr) 
 		{
 			if(m_KeyVar->Datatype == DATATYPE_INT) 
 			{
@@ -138,7 +138,7 @@ void COrm::GenerateSelectQuery(string &dest)
 	{
 		char *key_value_str = (char *)alloca(sizeof(char) * (m_KeyVar->MaxLen + 1));
 		amx_GetString(key_value_str, m_KeyVar->Address, 0, m_KeyVar->MaxLen);
-		if(key_value_str != NULL) 
+		if(key_value_str != nullptr) 
 		{
 			string escaped_str;
 			m_ConnHandle->GetMainConnection()->EscapeString(key_value_str, escaped_str);
@@ -159,7 +159,7 @@ void COrm::GenerateSelectQuery(string &dest)
 
 void COrm::ApplySelectResult(CMySQLResult *result) 
 {
-	if(result == NULL || result->GetFieldCount() != m_Vars.size() || result->GetRowCount() != 1)
+	if(result == nullptr || result->GetFieldCount() != m_Vars.size() || result->GetRowCount() != 1)
 		m_ErrorID = ORM_ERROR_NO_DATA;
 	else 
 	{
@@ -168,7 +168,7 @@ void COrm::ApplySelectResult(CMySQLResult *result)
 		{
 			SVarInfo *var = m_Vars.at(i);
 
-			char *data = NULL;
+			char *data = nullptr;
 			result->GetRowData(0, i, &data);
 
 			switch(var->Datatype) 
@@ -276,12 +276,12 @@ void COrm::GenerateInsertQuery(string &dest)
 
 void COrm::ApplyInsertResult(CMySQLResult *result) 
 {
-	if(result == NULL || result->InsertID() == 0)
+	if(result == nullptr || result->InsertID() == 0)
 		m_ErrorID = ORM_ERROR_NO_DATA;
 	else 
 	{
 		m_ErrorID = ORM_ERROR_OK;
-		if(m_KeyVar != NULL) 
+		if(m_KeyVar != nullptr) 
 		{
 			//update KeyVar, force int-datatype
 			m_KeyVar->Datatype = DATATYPE_INT;
@@ -337,7 +337,7 @@ unsigned short COrm::GenerateSaveQuery(string &dest)
 
 void COrm::AddVariable(char *varname, cell *address, unsigned short datatype, size_t len) 
 {
-	if(varname == NULL || address == NULL)
+	if(varname == nullptr || address == nullptr)
 		return ;
 
 	//abort variable saving if there is already one with same name
@@ -351,10 +351,10 @@ void COrm::AddVariable(char *varname, cell *address, unsigned short datatype, si
 void COrm::SetVariableAsKey(char *varname) 
 {
 	//remove key if there is one
-	if(m_KeyVar != NULL) 
+	if(m_KeyVar != nullptr) 
 	{
 		m_Vars.push_back(m_KeyVar);
-		m_KeyVar = NULL;
+		m_KeyVar = nullptr;
 	}
 
 	//set new key
@@ -364,7 +364,7 @@ void COrm::SetVariableAsKey(char *varname)
 		if(key_var->Name.compare(varname) == 0) 
 		{
 			m_Vars.erase(m_Vars.begin()+i);
-			if(m_KeyVar != NULL)
+			if(m_KeyVar != nullptr)
 				delete m_KeyVar;
 			m_KeyVar = key_var;
 			break;
@@ -377,7 +377,7 @@ COrm::~COrm()
 	for(vector<SVarInfo *>::iterator v = m_Vars.begin(), end = m_Vars.end(); v != end; ++v)
 		delete (*v);
 	
-	if(m_KeyVar != NULL)
+	if(m_KeyVar != nullptr)
 		delete m_KeyVar;
 }
 
