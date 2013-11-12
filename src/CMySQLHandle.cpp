@@ -205,7 +205,7 @@ bool CMySQLHandle::SetActiveResult(int resultid)
 
 void CMySQLHandle::ClearAll()
 {
-	for(auto i = SQLHandle.begin(); i != SQLHandle.end(); ++i)
+	for(unordered_map<int, CMySQLHandle *>::iterator i = SQLHandle.begin(); i != SQLHandle.end(); ++i)
 		i->second->Destroy();
 	
 	SQLHandle.clear();

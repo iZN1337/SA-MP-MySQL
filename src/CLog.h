@@ -4,12 +4,8 @@
 
 
 #include <boost/lockfree/queue.hpp>
-#include <atomic>
-#include <thread>
-
-using std::atomic;
-using std::thread;
-namespace this_thread = std::this_thread;
+#include <boost/atomic.hpp>
+#include <boost/thread/thread.hpp>
 
 
 enum e_LogLevel 
@@ -40,7 +36,7 @@ class CLog
 public:
 	static inline CLog *Get() 
 	{
-		if(m_Instance == nullptr)
+		if(m_Instance == NULL)
 			m_Instance = new CLog;
 		return m_Instance;
 	}
@@ -73,7 +69,7 @@ private:
 	{
 		m_SLogData() :
 			Status(LOG_NONE),
-			Name(nullptr), Msg(nullptr),
+			Name(NULL), Msg(NULL),
 			Info(LOG_INFO_NONE)
 		{}
 
@@ -92,7 +88,7 @@ private:
 
 	CLog() : 
 		m_LogLevel(LOG_ERROR | LOG_WARNING), 
-		m_LogThread(nullptr), 
+		m_LogThread(NULL), 
 		m_LogThreadAlive(true),
 		m_LogType(LOG_TYPE_TEXT)
 	{}
@@ -105,9 +101,9 @@ private:
 	unsigned int m_LogType;
 	unsigned int m_LogLevel;
 
-	thread *m_LogThread;
-	atomic<bool> m_LogThreadAlive;
-	thread::id m_MainThreadID;
+	boost::thread *m_LogThread;
+	boost::atomic<bool> m_LogThreadAlive;
+	boost::thread::id m_MainThreadID;
 
 	boost::lockfree::queue<
 			m_SLogData*, 

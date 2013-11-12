@@ -23,7 +23,7 @@ class CMySQLQuery
 public:
 	static CMySQLQuery Create(
 		string query, CMySQLConnection *connection, unsigned int connection_id,
-		string cbname, stack<boost::variant<cell, string>> cbparams,
+		string cbname, stack< boost::variant<cell, string> > cbparams,
 		COrm *orm_object = NULL, unsigned short orm_querytype = 0
 	);
 
@@ -35,7 +35,7 @@ public:
 
 	struct s_Callback
 	{
-		stack<boost::variant<cell, string>> Params;
+		stack< boost::variant<cell, string> > Params;
 		string Name;
 	} Callback;
 

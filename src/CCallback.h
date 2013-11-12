@@ -28,14 +28,14 @@ class CMySQLHandle;
 class CCallback 
 {
 private:
-	static list<tuple<shared_future<CMySQLQuery>, CMySQLHandle*>> m_CallbackQueue;
+	static list< tuple<shared_future<CMySQLQuery>, CMySQLHandle*> > m_CallbackQueue;
 	static mutex m_QueueMtx;
 
 	static list<AMX *> m_AmxList;
 
 public:
 
-	static void FillCallbackParams(stack<boost::variant<cell, string>> &dest, const char *format, AMX* amx, cell* params, const int ConstParamCount);
+	static void FillCallbackParams(stack< boost::variant<cell, string> > &dest, const char *format, AMX* amx, cell* params, const int ConstParamCount);
 
 	
 	static void ProcessCallbacks();

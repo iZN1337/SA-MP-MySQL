@@ -12,7 +12,7 @@
 #include <cstdio>
 
 
-list<tuple<shared_future<CMySQLQuery>, CMySQLHandle*>> CCallback::m_CallbackQueue;
+list< tuple<shared_future<CMySQLQuery>, CMySQLHandle*> > CCallback::m_CallbackQueue;
 mutex CCallback::m_QueueMtx;
 
 list<AMX *> CCallback::m_AmxList;
@@ -24,10 +24,10 @@ void CCallback::ProcessCallbacks()
 	if (!m_CallbackQueue.empty())
 	{
 		boost::mutex::scoped_lock LockGuard(m_QueueMtx);
-		auto i = m_CallbackQueue.begin();
+		list< tuple<shared_future<CMySQLQuery>, CMySQLHandle*> >::iterator i = m_CallbackQueue.begin();
 		do
 		{
-			auto &future_res = boost::get<0>((*i));
+			shared_future<CMySQLQuery> &future_res = boost::get<0>((*i));
 
 			if(future_res.has_value())
 			{
@@ -55,8 +55,9 @@ void CCallback::ProcessCallbacks()
 				{
 					
 					bool pass_by_ref = (QueryObj.Callback.Name.find("FJ37DH3JG") != string::npos);
-					for (auto &amx : m_AmxList)
+					for (list<AMX *>::iterator a = m_AmxList.begin(), end = m_AmxList.end(); a != end; ++a)
 					{
+						AMX *amx = (*a);
 						int amx_index;
 
 						if (amx_FindPublic(amx, QueryObj.Callback.Name.c_str(), &amx_index) == AMX_ERR_NONE)
@@ -133,7 +134,7 @@ void CCallback::AddAmx(AMX *amx)
 
 void CCallback::EraseAmx(AMX *amx) 
 {
-	for (auto a = m_AmxList.begin(), end = m_AmxList.end(); a != end; ++a)
+	for (list<AMX *>::iterator a = m_AmxList.begin(), end = m_AmxList.end(); a != end; ++a)
 	{
 		if ( (*a) == amx) 
 		{
@@ -148,17 +149,17 @@ void CCallback::ClearAll()
 	m_CallbackQueue.clear();
 }
 
-void CCallback::FillCallbackParams(stack<boost::variant<cell, string>> &dest, const char *format, AMX* amx, cell* params, const int ConstParamCount)
+void CCallback::FillCallbackParams(stack< boost::variant<cell, string> > &dest, const char *format, AMX* amx, cell* params, const int ConstParamCount)
 {
-	if (format == nullptr || !(*format))
+	if (format == NULL || !(*format))
 		return ;
 
 	unsigned int ParamIdx = 1;
-	cell *AddressPtr = nullptr;
+	cell *AddressPtr = NULL;
 
 	do
 	{
-		char *StrBuf = nullptr;
+		char *StrBuf = NULL;
 		switch (*format)
 		{
 			case 'd':
@@ -170,7 +171,7 @@ void CCallback::FillCallbackParams(stack<boost::variant<cell, string>> &dest, co
 			case 'z':
 			case 's':
 				amx_StrParam(amx, params[ConstParamCount + ParamIdx], StrBuf);
-				dest.push(StrBuf == nullptr ? string() : string(StrBuf));
+				dest.push(StrBuf == NULL ? string() : string(StrBuf));
 				break;
 			default:
 				dest.push(string("NULL"));

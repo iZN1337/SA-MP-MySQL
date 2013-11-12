@@ -100,7 +100,7 @@ cell AMX_NATIVE_CALL Native::orm_select(AMX* amx, cell* params)
 	string 
 		Query,
 		CB_Name(cb_name != NULL ? cb_name : "");
-	stack<boost::variant<cell, string>> CB_Params;
+	stack<boost::variant<cell, string> > CB_Params;
 
 	if (cb_format != NULL)
 		CCallback::FillCallbackParams(CB_Params, cb_format, amx, params, ConstParamCount);
@@ -131,7 +131,7 @@ cell AMX_NATIVE_CALL Native::orm_update(AMX* amx, cell* params)
 	CMySQLHandle *Handle = OrmObject->GetConnectionHandle();
 	
 	string Query, CB_Name;
-	stack<boost::variant<cell, string>> CB_Params;
+	stack<boost::variant<cell, string> > CB_Params;
 
 	OrmObject->GenerateUpdateQuery(Query);
 
@@ -170,7 +170,7 @@ cell AMX_NATIVE_CALL Native::orm_insert(AMX* amx, cell* params)
 	string 
 		Query,
 		CB_Name(cb_name != NULL ? cb_name : "");
-	stack<boost::variant<cell, string>> CB_Params;
+	stack<boost::variant<cell, string> > CB_Params;
 
 	if (cb_format != NULL)
 		CCallback::FillCallbackParams(CB_Params, cb_format, amx, params, ConstParamCount);
@@ -201,7 +201,7 @@ cell AMX_NATIVE_CALL Native::orm_delete(AMX* amx, cell* params)
 	CMySQLHandle *Handle = OrmObject->GetConnectionHandle();
 	
 	string Query, CB_Name;
-	stack<boost::variant<cell, string>> CB_Params;
+	stack<boost::variant<cell, string> > CB_Params;
 
 	OrmObject->GenerateDeleteQuery(Query);
 
@@ -243,7 +243,7 @@ cell AMX_NATIVE_CALL Native::orm_save(AMX* amx, cell* params)
 	string 
 		Query,
 		CB_Name(cb_name != NULL ? cb_name : "");
-	stack<boost::variant<cell, string>> CB_Params;
+	stack<boost::variant<cell, string> > CB_Params;
 
 	if (cb_format != NULL)
 		CCallback::FillCallbackParams(CB_Params, cb_format, amx, params, ConstParamCount);
@@ -852,7 +852,7 @@ cell AMX_NATIVE_CALL Native::mysql_tquery(AMX* amx, cell* params)
 		CB_Name(cb_name != NULL ? cb_name : "");
 
 
-	stack<boost::variant<cell, string>> CB_Params;
+	stack<boost::variant<cell, string> > CB_Params;
 	if (cb_format != NULL)
 		CCallback::FillCallbackParams(CB_Params, cb_format, amx, params, ConstParamCount);
 
@@ -887,7 +887,7 @@ cell AMX_NATIVE_CALL Native::mysql_query(AMX* amx, cell* params)
 	string query(query_str != NULL ? query_str : string());
 	int stored_result_id = 0;
 	CMySQLHandle *Handle = CMySQLHandle::GetHandle(connection_id);
-	CMySQLQuery QueryObj (CMySQLQuery::Create(boost::move(query), Handle->GetMainConnection(), connection_id, string(), stack<boost::variant<cell, string>>()));
+	CMySQLQuery QueryObj (CMySQLQuery::Create(boost::move(query), Handle->GetMainConnection(), connection_id, string(), stack<boost::variant<cell, string> >()));
 
 	if(use_cache == true)
 	{
