@@ -95,13 +95,17 @@ CMySQLQuery CMySQLQuery::Create(
 						for (size_t f = 0; f != num_fields; ++f)
 						{
 							//correct the pointers of the copied mysql result data
-							if (f != 0)
+							if (mem_data[r][f] != nullptr) //don't touch NULL values
 							{
-								mem_row_offset += static_cast<size_t>(mysql_lengths[f - 1]);
-								if (mem_data[r][f] != nullptr) //if the row value isn't NULL
-									mem_row_offset += 1; //add length for '\0' delimiter
+								if (f != 0)
+								{
+									mem_row_offset += static_cast<size_t>(mysql_lengths[f - 1]);
+									if (mem_data[r][f - 1] != nullptr) //if the row value isn't NULL
+										mem_row_offset += 1; //add length for '\0' delimiter
+								}
+
+								mem_data[r][f] = mem_row_offset;
 							}
-							mem_data[r][f] = mem_row_offset;
 						}
 					}
 
