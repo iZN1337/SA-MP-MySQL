@@ -13,7 +13,7 @@ namespace chrono = boost::chrono;
 #include "CLog.h"
 
 
-CLog *CLog::m_Instance = nullptr;
+CLog *CLog::m_Instance = NULL;
 
 
 void CLog::ProcessLog() 
@@ -36,7 +36,7 @@ void CLog::ProcessLog()
 
 	while(m_LogThreadAlive) 
 	{
-		m_SLogData *LogData = nullptr;
+		m_SLogData *LogData = NULL;
 		while(m_LogQueue.pop(LogData)) 
 		{
 			if(LogData->Info == LOG_INFO_CALLBACK_BEGIN)
@@ -114,7 +114,7 @@ void CLog::SetLogType(unsigned int logtype)
 
 	if(logtype == LOG_TYPE_HTML) 
 	{
-		if(m_LogThread == nullptr)
+		if(m_LogThread == NULL)
 			m_LogThread = new thread(&CLog::ProcessLog, this);
 
 		filename.append(".html");
@@ -199,7 +199,7 @@ int CLog::LogText(unsigned int loglevel, char* text)
         strftime(timeform, sizeof(timeform), "%X", timeinfo);
 
         FILE *log_file = fopen(m_LogFileName, "a");
-        if(log_file != nullptr) 
+        if(log_file != NULL) 
 		{
             fprintf(log_file, "[%s] [%s] %s\n", timeform, prefix, text);
             fclose(log_file);
@@ -247,7 +247,7 @@ void CLog::EndCallback()
 
 CLog::~CLog() 
 {
-	if(m_LogThread != nullptr) 
+	if(m_LogThread != NULL) 
 	{
 		m_LogThreadAlive = false;
 

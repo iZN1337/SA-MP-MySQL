@@ -111,10 +111,10 @@ void CMySQLHandle::Destroy()
 
 void CMySQLHandle::ExecuteOnConnections(void (CMySQLConnection::*func)())
 {
-	if (m_MainConnection != nullptr)
+	if (m_MainConnection != NULL)
 		(m_MainConnection->*func)();
 	
-	if (m_ThreadConnection != nullptr)
+	if (m_ThreadConnection != NULL)
 		(m_ThreadConnection->*func)();
 	
 	

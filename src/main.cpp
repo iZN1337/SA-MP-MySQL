@@ -23,7 +23,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData)
 	pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
 	logprintf = (logprintf_t)ppData[PLUGIN_DATA_LOGPRINTF];
 	
-	if (mysql_library_init(0, nullptr, nullptr)) 
+	if (mysql_library_init(0, NULL, NULL)) 
 	{
 		logprintf(" >> plugin.mysql: plugin failed to load due to uninitialized MySQL library ('libmysql.dll' probably missing).");
 		return false;
