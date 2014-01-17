@@ -16,10 +16,10 @@
 
 #define ER_DBACCESS_DENIED_ERROR 		1044
 #define ER_ACCESS_DENIED_ERROR 			1045
-#define ER_UNKNOWN_TABLE 				1109
-#define ER_SYNTAX_ERROR 				1149
+#define ER_UNKNOWN_TABLE 			1109
+#define ER_SYNTAX_ERROR 			1149
 #define CR_SERVER_GONE_ERROR 			2006
-#define CR_SERVER_LOST 					2013
+#define CR_SERVER_LOST 				2013
 #define CR_COMMAND_OUT_OF_SYNC 			2014
 #define CR_SERVER_LOST_EXTENDED 		2055
 
@@ -134,13 +134,13 @@ native mysql_option(E_MYSQL_OPTION:type, value);
 native mysql_errno(connectionHandle = 1);
 native mysql_escape_string(const source[], destination[], connectionHandle = 1, max_len = sizeof(destination));
 native mysql_format(connectionHandle, output[], len, format[], {Float,_}:...);
-native mysql_pquery(connectionHandle, query[], callback[] = "", format[] = "", {Float,_}:...);
+native mysql_pquery(connectionHandle, query[], const callback[] = "", const format[] = "", {Float,_}:...);
 /*
-native mysql_pquery_inline(connHandle, query[], callback:Callback, format[], {Float,_}:...); //y_inline
+native mysql_pquery_inline(connHandle, query[], callback:Callback, const format[], {Float,_}:...); //y_inline
 */
-native mysql_tquery(connectionHandle, query[], callback[] = "", format[] = "", {Float,_}:...);
+native mysql_tquery(connectionHandle, query[], const callback[] = "", const format[] = "", {Float,_}:...);
 /*
-native mysql_tquery_inline(connHandle, query[], callback:Callback, format[], {Float,_}:...); //y_inline
+native mysql_tquery_inline(connHandle, query[], callback:Callback, const format[], {Float,_}:...); //y_inline
 */
 native Cache:mysql_query(conhandle, query[], bool:use_cache = true);
 
